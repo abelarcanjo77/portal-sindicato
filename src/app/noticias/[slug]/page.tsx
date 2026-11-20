@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const titulo = `${noticia.titulo} | Portal do Sindicato`;
+  const titulo = noticia.titulo;
   const descricao =
     noticia.resumo ||
     "Acompanhe as notícias, conquistas e comunicados oficiais no Portal do Sindicato.";
