@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -9,6 +10,31 @@ import {
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const categoria = await getCategoriaPorSlug(slug);
+
+  if (!categoria) {
+    return {
+      title: "Categoria não encontrada | Portal do Sindicato",
+      description: "A editoria solicitada não foi encontrada no Portal do Sindicato.",
+    };
+  }
+
+  const titulo = `${categoria.titulo} | Portal do Sindicato`;
+  const descricao = `Acompanhe as últimas notícias, conquistas e atualizações sobre ${categoria.titulo} no Portal do Sindicato.`;
+
+  return {
+    title: titulo,
+    description: descricao,
+    openGraph: {
+      title: titulo,
+      description: descricao,
+      type: "website",
+    },
+  };
 }
 
 function formatarData(dataIso: string) {

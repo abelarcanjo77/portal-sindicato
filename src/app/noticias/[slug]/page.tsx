@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -6,6 +7,51 @@ import { CorpoMateria } from "@/app/components/CorpoMateria";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const noticia = await getNoticiaPorSlug(slug);
+
+  if (!noticia) {
+    return {
+      title: "Matéria não encontrada | Portal do Sindicato",
+      description: "A matéria solicitada não foi encontrada no Portal do Sindicato.",
+    };
+  }
+
+  const titulo = `${noticia.titulo} | Portal do Sindicato`;
+  const descricao =
+    noticia.resumo ||
+    "Acompanhe as notícias, conquistas e comunicados oficiais no Portal do Sindicato.";
+
+  return {
+    title: titulo,
+    description: descricao,
+    keywords: noticia.tags && noticia.tags.length > 0 ? noticia.tags : undefined,
+    openGraph: {
+      title: noticia.titulo,
+      description: descricao,
+      type: "article",
+      publishedTime: noticia.dataPublicacao || undefined,
+      section: noticia.categoria?.titulo || undefined,
+      tags: noticia.tags && noticia.tags.length > 0 ? noticia.tags : undefined,
+      images: noticia.imagemUrl
+        ? [
+            {
+              url: noticia.imagemUrl,
+              alt: noticia.titulo,
+            },
+          ]
+        : [],
+    },
+    twitter: {
+      card: noticia.imagemUrl ? "summary_large_image" : "summary",
+      title: noticia.titulo,
+      description: descricao,
+      images: noticia.imagemUrl ? [noticia.imagemUrl] : [],
+    },
+  };
 }
 
 function formatarDataCompleta(dataIso: string) {
