@@ -1,21 +1,24 @@
-import type { StructureResolver } from 'sanity/structure'
+import type { StructureResolver } from "sanity/structure";
 
 export const structure: StructureResolver = (S) =>
   S.list()
-    .title('Painel Editorial do Sindicato')
+    .title("Gestão do Portal")
     .items([
       S.listItem()
-        .title('Todas as Matérias')
-        .schemaType('noticia')
-        .child(S.documentTypeList('noticia').title('Todas as Matérias')),
-      S.listItem()
-        .title('Matérias em Destaque na Capa')
-        .schemaType('noticia')
+        .title("Todas as Notícias")
         .child(
-          S.documentList()
-            .title('Destaques da Capa')
-            .filter('_type == "noticia" && destaqueHome == true')
+          S.documentTypeList("noticia")
+            .title("Todas as Notícias")
+            .defaultOrdering([{ field: "dataPublicacao", direction: "desc" }])
+        ),
+      S.listItem()
+        .title("Notícias — Jurídico")
+        .child(
+          S.documentTypeList("noticia")
+            .title("Notícias — Jurídico")
+            .filter('_type == "noticia" && categoria->slug.current == "juridico"')
+            .defaultOrdering([{ field: "dataPublicacao", direction: "desc" }])
         ),
       S.divider(),
-      S.documentTypeListItem('categoria').title('Categorias'),
-    ])
+      S.documentTypeListItem("categoria").title("Categorias"),
+    ]);
