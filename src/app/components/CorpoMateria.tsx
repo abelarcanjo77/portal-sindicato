@@ -60,6 +60,18 @@ const componentesPortableText: PortableTextComponents = {
         {children}
       </a>
     ),
+    left: ({ children }: { children?: React.ReactNode }) => (
+      <span className="block text-left">{children}</span>
+    ),
+    center: ({ children }: { children?: React.ReactNode }) => (
+      <span className="block text-center">{children}</span>
+    ),
+    right: ({ children }: { children?: React.ReactNode }) => (
+      <span className="block text-right">{children}</span>
+    ),
+    justify: ({ children }: { children?: React.ReactNode }) => (
+      <span className="block text-justify">{children}</span>
+    ),
   },
   types: {
     image: ({ value }) => {
