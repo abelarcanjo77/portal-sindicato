@@ -104,9 +104,9 @@ export default defineType({
               { title: 'Strike', value: 'strike-through' },
               ...(
                 [
-                  alignDecorator('Alinhar à Esquerda', 'left', '⬅', AlignLeft),
+                  alignDecorator('Alinhar à Esquerda', 'left', '←', AlignLeft),
                   alignDecorator('Centralizar', 'center', '↔', AlignCenter),
-                  alignDecorator('Alinhar à Direita', 'right', '➡', AlignRight),
+                  alignDecorator('Alinhar à Direita', 'right', '→', AlignRight),
                   alignDecorator('Justificar', 'justify', '☰', AlignJustify),
                 ] as unknown as Array<{ title: string; value: string }>
               ),
