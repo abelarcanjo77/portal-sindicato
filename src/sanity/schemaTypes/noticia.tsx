@@ -1,4 +1,22 @@
-import { defineField, defineType } from 'sanity'
+import { defineField, defineType, defineArrayMember } from 'sanity'
+import React from 'react'
+
+const AlignLeft = (props: any) => <div style={{ textAlign: 'left', width: '100%' }}>{props.children}</div>
+const AlignCenter = (props: any) => <div style={{ textAlign: 'center', width: '100%' }}>{props.children}</div>
+const AlignRight = (props: any) => <div style={{ textAlign: 'right', width: '100%' }}>{props.children}</div>
+const AlignJustify = (props: any) => <div style={{ textAlign: 'justify', width: '100%' }}>{props.children}</div>
+
+const alignDecorator = (
+  title: string,
+  value: 'left' | 'center' | 'right' | 'justify',
+  symbol: string,
+  component: React.ComponentType<{ children?: React.ReactNode }>
+) => ({
+  title,
+  value,
+  icon: () => <span>{symbol}</span>,
+  component,
+})
 
 export default defineType({
   name: 'noticia',
@@ -74,7 +92,27 @@ export default defineType({
       type: 'array',
       group: 'conteudo',
       of: [
-        { type: 'block' },
+        defineArrayMember({
+          type: 'block',
+          marks: {
+            // Mantém os padrões (negrito, itálico, etc.) e adiciona os alinhamentos
+            decorators: [
+              { title: 'Strong', value: 'strong' },
+              { title: 'Emphasis', value: 'em' },
+              { title: 'Code', value: 'code' },
+              { title: 'Underline', value: 'underline' },
+              { title: 'Strike', value: 'strike-through' },
+              ...(
+                [
+                  alignDecorator('Alinhar à Esquerda', 'left', '⬅', AlignLeft),
+                  alignDecorator('Centralizar', 'center', '↔', AlignCenter),
+                  alignDecorator('Alinhar à Direita', 'right', '➡', AlignRight),
+                  alignDecorator('Justificar', 'justify', '☰', AlignJustify),
+                ] as unknown as Array<{ title: string; value: string }>
+              ),
+            ],
+          },
+        }),
         {
           type: 'image',
           title: 'Foto Única',
