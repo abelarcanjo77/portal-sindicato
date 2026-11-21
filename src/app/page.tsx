@@ -200,6 +200,11 @@ export default async function HomePage() {
           )}
         </section>
       </main>
+      <footer className="mx-auto px-4 py-8 space-y-12 bg-gray-200">
+          <div className="flex justify-center mx-auto max-w-6xl">
+            <span className="font-semibold text-xl">ATENÇÃO! - Esse site é apenas um componente para treino e estudo de programação. Nenhum conteúdo é real.</span>
+          </div>
+      </footer>
     </div>
   );
 }
