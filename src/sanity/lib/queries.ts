@@ -257,3 +257,33 @@ export function filtrarCategoriasVisiveis(categorias?: Categoria[]): Categoria[]
   if (!categorias || categorias.length === 0) return [];
   return categorias.filter((cat) => !SLUGS_GALERIA_OCULTOS.has(cat.slug));
 }
+
+/* Bunner Destaque */
+
+export interface BannerDestaque {
+  _id: string;
+  titulo: string;
+  imagemUrl: string;
+  textoBotao: string;
+  subtextoBotao?: string;
+  urlDestino: string;
+  abrirNovaAba?: boolean;
+  ordem?: number;
+}
+
+export async function getBannersDestaque(): Promise<BannerDestaque[]> {
+  return client.fetch(
+    `*[_type == "bannerDestaque" && ativo == true && defined(imagem.asset)] | order(ordem asc, _createdAt desc) {
+      _id,
+      titulo,
+      "imagemUrl": imagem.asset->url,
+      textoBotao,
+      subtextoBotao,
+      urlDestino,
+      abrirNovaAba,
+      ordem
+    }`,
+    {},
+    { next: { tags: ["bannerDestaque"], revalidate: 60 } }
+  );
+}

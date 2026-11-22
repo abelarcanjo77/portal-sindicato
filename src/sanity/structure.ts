@@ -12,6 +12,19 @@ export const structure: StructureResolver = (S) =>
     .title("Gestão do Portal")
     .items([
       S.listItem()
+        .title("Banner Destaque")
+        .child(
+          S.documentTypeList("bannerDestaque")
+            .title("Banners do Topo (Swiper)")
+            .defaultOrdering([
+              { field: "ordem", direction: "asc" },
+              { field: "_createdAt", direction: "desc" },
+            ])
+        ),
+
+      S.divider(),
+
+      S.listItem()
         .title("Todas as Notícias")
         .child(
           S.documentTypeList("noticia")

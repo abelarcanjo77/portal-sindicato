@@ -2,11 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   filtrarCategoriasVisiveis,
+  getBannersDestaque,
   getCategorias,
   getNoticiasDestaque,
   getUltimasNoticias,
 } from "@/sanity/lib/queries";
 import { CabecalhoPortal } from "./components/CabecalhoPortal";
+import { CarrosselBanners } from "./components/CarrosselBanners";
 
 function formatarData(dataIso: string) {
   if (!dataIso) return "";
@@ -18,7 +20,8 @@ function formatarData(dataIso: string) {
 }
 
 export default async function HomePage() {
-  const [destaques, ultimas, categorias] = await Promise.all([
+  const [banners, destaques, ultimas, categorias] = await Promise.all([
+    getBannersDestaque(),
     getNoticiasDestaque(),
     getUltimasNoticias(),
     getCategorias(),
@@ -33,6 +36,9 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <CabecalhoPortal categorias={categorias} />
+
+      {/* Painel rotativo de banners no topo da Home */}
+      <CarrosselBanners banners={banners} />
 
       <main className="mx-auto max-w-6xl px-4 py-8 space-y-12">
         {/* Secção de Destaques */}
