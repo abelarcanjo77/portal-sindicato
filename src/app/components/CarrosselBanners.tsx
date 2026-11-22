@@ -1,23 +1,37 @@
 "use client";
 
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Pagination, A11y } from "swiper/modules";
+import type { Swiper as SwiperClass } from "swiper";
+import { Autoplay, Navigation, A11y } from "swiper/modules";
 import type { BannerDestaque } from "@/sanity/lib/queries";
 
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/pagination";
 
 interface CarrosselBannersProps {
   banners: BannerDestaque[];
 }
 
 export function CarrosselBanners({ banners }: CarrosselBannersProps) {
+  const swiperRef = useRef<SwiperClass | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
   if (!banners || banners.length === 0) return null;
 
   const temVarios = banners.length > 1;
+
+  const irParaSlide = (idx: number) => {
+    const swiper = swiperRef.current;
+    if (!swiper) return;
+    if (temVarios) {
+      swiper.slideToLoop(idx);
+    } else {
+      swiper.slideTo(idx);
+    }
+  };
 
   return (
     <section
@@ -25,9 +39,15 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
       className="relative w-full bg-slate-900 select-none group"
     >
       <Swiper
-        modules={[Autoplay, Navigation, Pagination, A11y]}
+        modules={[Autoplay, Navigation, A11y]}
         slidesPerView={1}
         loop={temVarios}
+        onSwiper={(instance) => {
+          swiperRef.current = instance;
+        }}
+        onSlideChange={(instance) => {
+          setActiveIndex(instance.realIndex);
+        }}
         autoplay={
           temVarios
             ? {
@@ -45,13 +65,6 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
               }
             : false
         }
-        pagination={
-          temVarios
-            ? {
-                clickable: true,
-              }
-            : false
-        }
         className="w-full"
       >
         {banners.map((banner, index) => {
@@ -60,7 +73,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
             banner.urlDestino.startsWith("https://");
 
           const conteudoBotao = (
-            <span className="flex flex-col items-center justify-center rounded-md bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-2.5 sm:px-8 sm:py-3 text-center text-slate-950 shadow-lg ring-1 ring-black/15 transition">
+            <span className="flex flex-col items-center justify-center rounded-md bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-2.5 sm:px-8 sm:py-3 text-center text-slate-950 shadow-lg ring-0 ring-black/15 transition">
               <span className="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-wide leading-tight">
                 {banner.textoBotao}
               </span>
@@ -85,11 +98,11 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
                   className="object-cover object-center"
                 />
 
-                {/* Leve degradê inferior para destacar o botão flutuante */}
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/55 via-black/20 to-transparent" />
+                {/* Degradê inferior suave para dar contraste ao botão e aos marcadores */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
 
-                {/* Botão flutuante centralizado na parte inferior */}
-                <div className="absolute inset-x-0 bottom-7 sm:bottom-9 z-10 mx-auto max-w-4xl px-4 flex justify-center">
+                {/* Botão flutuante centralizado com respiro acima dos marcadores */}
+                <div className="absolute inset-x-0 bottom-12 sm:bottom-13 z-10 mx-auto max-w-4xl px-4 flex justify-center">
                   {isExterno || banner.abrirNovaAba ? (
                     <a
                       href={banner.urlDestino}
@@ -112,6 +125,32 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
           );
         })}
       </Swiper>
+
+      {/* Marcadores em pílula controlados diretamente pelo React */}
+      {temVarios && (
+        <div
+          aria-label="Selecionar banner"
+          className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 rounded-full bg-slate-950/45 px-3 py-1.5 backdrop-blur-xs ring-0 ring-gray-500"
+        >
+          {banners.map((banner, idx) => {
+            const ativo = idx === activeIndex;
+            return (
+              <button
+                key={banner._id}
+                type="button"
+                aria-label={`Ir para o banner ${idx + 1}`}
+                aria-current={ativo ? "true" : "false"}
+                onClick={() => irParaSlide(idx)}
+                className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${
+                  ativo
+                    ? "w-6 bg-amber-400"
+                    : "w-2 bg-white/45 hover:bg-white/75"
+                }`}
+              />
+            );
+          })}
+        </div>
+      )}
 
       {/* Setas laterais customizadas */}
       {temVarios && (

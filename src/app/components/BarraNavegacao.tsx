@@ -100,7 +100,7 @@ export function BarraNavegacao({ categorias }: BarraNavegacaoProps) {
     <nav
       ref={navRef}
       aria-label="Navegação principal"
-      className="relative z-30 border-t border-blue-800/80 bg-blue-950/95 backdrop-blur-xs"
+      className="relative z-30 border-t border-blue-400/80 bg-blue-950 backdrop-blur-xs"
     >
       <div className="mx-auto max-w-6xl px-4">
         {/* Barra Desktop */}

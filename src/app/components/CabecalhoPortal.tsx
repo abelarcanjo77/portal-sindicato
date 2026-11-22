@@ -12,7 +12,7 @@ export function CabecalhoPortal({
   termoBusca = "",
 }: CabecalhoPortalProps) {
   return (
-    <header className="bg-gradient-to-b from-blue-900 to-blue-950 text-white shadow-md">
+    <header className="bg-blue-800 text-white shadow-md">
       <div className="mx-auto max-w-6xl px-4 py-5 md:py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="min-w-0">
           <Link
@@ -42,7 +42,7 @@ export function CabecalhoPortal({
             />
             <button
               type="submit"
-              className="shrink-0 rounded-lg bg-blue-600 hover:bg-blue-500 active:bg-blue-700 px-4 py-2 text-sm font-semibold text-white shadow-xs transition cursor-pointer"
+              className="shrink-0 rounded-lg bg-blue-950 hover:bg-blue-500 active:bg-blue-700 px-4 py-2 text-sm font-semibold text-white shadow-xs transition cursor-pointer"
             >
               Buscar
             </button>
