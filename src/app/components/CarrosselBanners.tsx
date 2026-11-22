@@ -80,6 +80,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
                   alt={banner.titulo}
                   fill
                   priority={index === 0}
+                  unoptimized
                   sizes="100vw"
                   className="object-cover object-center"
                 />
@@ -96,7 +97,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
                       rel={
                         banner.abrirNovaAba ? "noopener noreferrer" : undefined
                       }
-                      className="w-full max-w-2xl"
+                      className="w-full max-w-lg"
                     >
                       {conteudoBotao}
                     </a>

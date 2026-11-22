@@ -276,7 +276,7 @@ export async function getBannersDestaque(): Promise<BannerDestaque[]> {
     `*[_type == "bannerDestaque" && ativo == true && defined(imagem.asset)] | order(ordem asc, _createdAt desc) {
       _id,
       titulo,
-      "imagemUrl": imagem.asset->url,
+      "imagemUrl": imagem.asset->url + "?w=1920&auto=format&q=90",
       textoBotao,
       subtextoBotao,
       urlDestino,
