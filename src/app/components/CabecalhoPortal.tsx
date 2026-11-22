@@ -4,7 +4,6 @@ import { BarraNavegacao } from "./BarraNavegacao";
 
 interface CabecalhoPortalProps {
   categorias: Categoria[];
-  categoriaAtivaSlug?: string;
   termoBusca?: string;
 }
 
@@ -13,30 +12,37 @@ export function CabecalhoPortal({
   termoBusca = "",
 }: CabecalhoPortalProps) {
   return (
-    <header className="bg-blue-900 text-white shadow">
-      <div className="mx-auto max-w-6xl px-4 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <Link href="/" className="text-2xl font-bold tracking-tight hover:text-blue-200 transition">
+    <header className="bg-gradient-to-b from-blue-900 to-blue-950 text-white shadow-md">
+      <div className="mx-auto max-w-6xl px-4 py-5 md:py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="min-w-0">
+          <Link
+            href="/"
+            className="inline-block text-2xl font-extrabold tracking-tight text-white hover:text-blue-200 transition"
+          >
             Portal do Sindicato
           </Link>
-          <p className="text-sm text-blue-200">
+          <p className="mt-0.5 text-sm text-blue-200/90">
             Informação, direitos e mobilização da categoria
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-          <form action="/busca" method="GET" className="flex flex-1 sm:w-80 gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
+          <form
+            action="/busca"
+            method="GET"
+            className="flex flex-1 sm:w-72 lg:w-80 gap-2"
+          >
             <input
               type="text"
               name="q"
               defaultValue={termoBusca}
               placeholder="Buscar matérias, tags ou temas..."
               aria-label="Buscar matérias"
-              className="flex-1 rounded-lg bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+              className="min-w-0 flex-1 rounded-lg bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400 shadow-xs focus:outline-none focus:ring-2 focus:ring-sky-400"
             />
             <button
               type="submit"
-              className="rounded-lg bg-blue-700 hover:bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition cursor-pointer"
+              className="shrink-0 rounded-lg bg-blue-600 hover:bg-blue-500 active:bg-blue-700 px-4 py-2 text-sm font-semibold text-white shadow-xs transition cursor-pointer"
             >
               Buscar
             </button>
@@ -44,7 +50,7 @@ export function CabecalhoPortal({
 
           <Link
             href="/studio"
-            className="text-center text-xs bg-blue-800 hover:bg-blue-700 px-3 py-2.5 rounded-lg border border-blue-700 transition whitespace-nowrap"
+            className="inline-flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 px-3.5 py-2 text-xs font-semibold text-blue-100 hover:text-white ring-1 ring-white/20 transition whitespace-nowrap"
           >
             Área do Editor
           </Link>
@@ -52,7 +58,7 @@ export function CabecalhoPortal({
       </div>
 
       {/* Barra de Categorias */}
-      <BarraNavegacao categorias={categorias}/>
+      <BarraNavegacao categorias={categorias} />
     </header>
   );
 }
