@@ -20,7 +20,7 @@ function formatarData(dataIso?: string) {
 export default async function TodasNoticiasPage({ searchParams }: PageProps) {
   const { page } = await searchParams;
   const paginaAtual = Math.max(1, Number(page) || 1);
-  const porPagina = 9;
+  const porPagina = 6;
 
   const [resultado, categorias] = await Promise.all([
     getTodasNoticiasPaginada(paginaAtual, porPagina),
