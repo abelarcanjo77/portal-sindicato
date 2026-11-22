@@ -82,7 +82,10 @@ export default async function TodasNoticiasPage({ searchParams }: PageProps) {
                           {formatarData(noticia.dataPublicacao)}
                         </time>
                         {noticia.categoria?.titulo && (
-                          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 font-medium text-slate-700">
+                          <span 
+                            style={{backgroundColor: `color-mix(in srgb, ${noticia.categoria.cor} 100%, transparent)`}} 
+                            className="rounded-sm px-2.5 py-0.5 font-medium text-white"
+                          >
                             {noticia.categoria.titulo}
                           </span>
                         )}
