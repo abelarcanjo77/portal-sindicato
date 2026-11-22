@@ -17,7 +17,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!categoria) {
     return {
       title: "Categoria não encontrada | Portal do Sindicato",
-      description: "A editoria solicitada não foi encontrada no Portal do Sindicato.",
+      description:
+        "A editoria solicitada não foi encontrada no Portal do Sindicato.",
     };
   }
 
@@ -54,7 +55,7 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
   const { page } = await searchParams;
   const paginaAtual = Math.max(1, Number(page) || 1);
   const porPagina = 6;
-  
+
   const [categoria, resultado, todasCategorias] = await Promise.all([
     getCategoriaPorSlug(slug),
     getNoticiasPorCategoriaPaginada(slug, paginaAtual, porPagina),
@@ -70,7 +71,6 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      
       <CabecalhoPortal categorias={todasCategorias} />
 
       <main className="mx-auto max-w-6xl px-4 py-10">
@@ -79,7 +79,9 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
             className="inline-block h-6 w-2 rounded-full"
             style={{ backgroundColor: categoria.cor || "#1D4ED8" }}
           />
-          <h1 className="text-3xl font-bold text-slate-900">{categoria.titulo}</h1>
+          <h1 className="text-3xl font-bold text-slate-900">
+            {categoria.titulo}
+          </h1>
         </div>
 
         {noticias.length === 0 ? (
@@ -88,46 +90,72 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {noticias.map((noticia) => (
-              <article
-                key={noticia._id}
-                className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 flex flex-col"
-              >
-                <Link href={`/noticias/${noticia.slug}`} className="group flex-1 flex flex-col">
-                  <div className="relative h-48 w-full bg-slate-200">
-                    {noticia.imagemUrl ? (
-                      <Image
-                        src={noticia.imagemUrl}
-                        alt={noticia.titulo}
-                        fill
-                        className="object-cover group-hover:scale-105 transition duration-300"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-slate-400 text-sm">
-                        Sem imagem
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                      <time className="block text-xs text-slate-500 mb-2">
-                        {formatarData(noticia.dataPublicacao)}
-                      </time>
-                      <h2 className="font-bold text-lg text-slate-900 group-hover:text-blue-800 transition line-clamp-2">
-                        {noticia.titulo}
-                      </h2>
-                      {noticia.resumo && (
-                        <p className="mt-2 text-sm text-slate-600 line-clamp-3">
-                          {noticia.resumo}
-                        </p>
+            {noticias.map((noticia) => {
+              const categoriasNoticia = noticia.categorias ?? [];
+
+              return (
+                <article
+                  key={noticia._id}
+                  className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 flex flex-col"
+                >
+                  <Link
+                    href={`/noticias/${noticia.slug}`}
+                    className="group flex-1 flex flex-col"
+                  >
+                    <div className="relative h-48 w-full bg-slate-200">
+                      {noticia.imagemUrl ? (
+                        <Image
+                          src={noticia.imagemUrl}
+                          alt={noticia.titulo}
+                          fill
+                          className="object-cover group-hover:scale-105 transition duration-300"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-slate-400 text-sm">
+                          Sem imagem
+                        </div>
                       )}
                     </div>
-                  </div>
-                </Link>
-              </article>
-            ))}
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <time className="text-xs text-slate-500 shrink-0">
+                            {formatarData(noticia.dataPublicacao)}
+                          </time>
+
+                          {categoriasNoticia.length > 0 && (
+                            <div className="flex flex-wrap justify-end gap-1">
+                              {categoriasNoticia.map((cat, idx) => (
+                                <span
+                                  key={cat._id ?? `${cat.slug}-${idx}`}
+                                  className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded text-white"
+                                  style={{
+                                    backgroundColor: cat.cor || "#1D4ED8",
+                                  }}
+                                >
+                                  {cat.titulo}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <h2 className="font-bold text-lg text-slate-900 group-hover:text-blue-800 transition line-clamp-2">
+                          {noticia.titulo}
+                        </h2>
+                        {noticia.resumo && (
+                          <p className="mt-2 text-sm text-slate-600 line-clamp-3">
+                            {noticia.resumo}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </article>
+              );
+            })}
           </div>
         )}
+
         <Paginacao
           paginaAtual={paginaAtual}
           totalPaginas={totalPaginas}

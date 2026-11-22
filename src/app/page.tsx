@@ -25,10 +25,10 @@ export default async function HomePage() {
 
   const manchetePrincipal = destaques[0];
   const destaquesSecundarios = destaques.slice(1, 3);
+  const categoriasManchete = manchetePrincipal?.categorias ?? [];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      
       <CabecalhoPortal categorias={categorias} />
 
       <main className="mx-auto max-w-6xl px-4 py-8 space-y-12">
@@ -38,7 +38,10 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Manchete Principal */}
               <article className="lg:col-span-2 bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 flex flex-col">
-                <Link href={`/noticias/${manchetePrincipal.slug}`} className="group block">
+                <Link
+                  href={`/noticias/${manchetePrincipal.slug}`}
+                  className="group block"
+                >
                   <div className="relative h-72 md:h-96 w-full bg-slate-200">
                     {manchetePrincipal.imagemUrl ? (
                       <Image
@@ -55,18 +58,18 @@ export default async function HomePage() {
                     )}
                   </div>
                   <div className="p-6">
-                    <div className="flex items-center gap-3 mb-2">
-                      {manchetePrincipal.categoria && (
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      {categoriasManchete.map((cat, idx) => (
                         <span
+                          key={cat._id ?? `${cat.slug}-${idx}`}
                           className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded text-white"
                           style={{
-                            backgroundColor:
-                              manchetePrincipal.categoria.cor || "#1D4ED8",
+                            backgroundColor: cat.cor || "#1D4ED8",
                           }}
                         >
-                          {manchetePrincipal.categoria.titulo}
+                          {cat.titulo}
                         </span>
-                      )}
+                      ))}
                       <time className="text-xs text-slate-500">
                         {formatarData(manchetePrincipal.dataPublicacao)}
                       </time>
@@ -85,43 +88,55 @@ export default async function HomePage() {
 
               {/* Destaques Secundários */}
               <div className="flex flex-col gap-6">
-                {destaquesSecundarios.map((item) => (
-                  <article
-                    key={item._id}
-                    className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 flex-1"
-                  >
-                    <Link href={`/noticias/${item.slug}`} className="group block h-full">
-                      <div className="relative h-40 w-full bg-slate-200">
-                        {item.imagemUrl && (
-                          <Image
-                            src={item.imagemUrl}
-                            alt={item.titulo}
-                            fill
-                            className="object-cover group-hover:scale-105 transition duration-300"
-                          />
-                        )}
-                      </div>
-                      <div className="p-4">
-                        {item.categoria && (
-                          <span
-                            className="inline-block text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded text-white mb-2"
-                            style={{
-                              backgroundColor: item.categoria.cor || "#1D4ED8",
-                            }}
-                          >
-                            {item.categoria.titulo}
-                          </span>
-                        )}
-                        <h3 className="font-bold text-lg leading-snug group-hover:text-blue-800 transition">
-                          {item.titulo}
-                        </h3>
-                        <time className="block mt-2 text-xs text-slate-500">
-                          {formatarData(item.dataPublicacao)}
-                        </time>
-                      </div>
-                    </Link>
-                  </article>
-                ))}
+                {destaquesSecundarios.map((item) => {
+                  const categoriasItem = item.categorias ?? [];
+
+                  return (
+                    <article
+                      key={item._id}
+                      className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 flex-1"
+                    >
+                      <Link
+                        href={`/noticias/${item.slug}`}
+                        className="group block h-full"
+                      >
+                        <div className="relative h-40 w-full bg-slate-200">
+                          {item.imagemUrl && (
+                            <Image
+                              src={item.imagemUrl}
+                              alt={item.titulo}
+                              fill
+                              className="object-cover group-hover:scale-105 transition duration-300"
+                            />
+                          )}
+                        </div>
+                        <div className="p-4">
+                          {categoriasItem.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              {categoriasItem.map((cat, idx) => (
+                                <span
+                                  key={cat._id ?? `${cat.slug}-${idx}`}
+                                  className="inline-block text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded text-white"
+                                  style={{
+                                    backgroundColor: cat.cor || "#1D4ED8",
+                                  }}
+                                >
+                                  {cat.titulo}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <h3 className="font-bold text-lg leading-snug group-hover:text-blue-800 transition">
+                            {item.titulo}
+                          </h3>
+                          <time className="block mt-2 text-xs text-slate-500">
+                            {formatarData(item.dataPublicacao)}
+                          </time>
+                        </div>
+                      </Link>
+                    </article>
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -138,64 +153,80 @@ export default async function HomePage() {
           {ultimas.length === 0 ? (
             <div className="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-500">
               Nenhuma matéria publicada ainda. Aceda a{" "}
-              <Link href="/studio" className="text-blue-700 underline font-medium">
+              <Link
+                href="/studio"
+                className="text-blue-700 underline font-medium"
+              >
                 /studio
               </Link>{" "}
               para publicar a primeira notícia.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {ultimas.slice(0, 6).map((noticia) => (
-                <article
-                  key={noticia._id}
-                  className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 flex flex-col"
-                >
-                  <Link href={`/noticias/${noticia.slug}`} className="group flex-1 flex flex-col">
-                    <div className="relative h-48 w-full bg-slate-200">
-                      {noticia.imagemUrl ? (
-                        <Image
-                          src={noticia.imagemUrl}
-                          alt={noticia.titulo}
-                          fill
-                          className="object-cover group-hover:scale-105 transition duration-300"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-slate-400 text-sm">
-                          Sem imagem
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-5 flex-1 flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          {noticia.categoria && (
-                            <span
-                              className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded text-white"
-                              style={{
-                                backgroundColor:
-                                  noticia.categoria.cor || "#1D4ED8",
-                              }}
-                            >
-                              {noticia.categoria.titulo}
-                            </span>
-                          )}
-                          <time className="text-xs text-slate-500">
-                            {formatarData(noticia.dataPublicacao)}
-                          </time>
-                        </div>
-                        <h3 className="font-bold text-lg text-slate-900 group-hover:text-blue-800 transition line-clamp-2">
-                          {noticia.titulo}
-                        </h3>
-                        {noticia.resumo && (
-                          <p className="mt-2 text-sm text-slate-600 line-clamp-3">
-                            {noticia.resumo}
-                          </p>
+              {ultimas.slice(0, 6).map((noticia) => {
+                const categoriasNoticia = noticia.categorias ?? [];
+
+                return (
+                  <article
+                    key={noticia._id}
+                    className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 flex flex-col"
+                  >
+                    <Link
+                      href={`/noticias/${noticia.slug}`}
+                      className="group flex-1 flex flex-col"
+                    >
+                      <div className="relative h-48 w-full bg-slate-200">
+                        {noticia.imagemUrl ? (
+                          <Image
+                            src={noticia.imagemUrl}
+                            alt={noticia.titulo}
+                            fill
+                            className="object-cover group-hover:scale-105 transition duration-300"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-slate-400 text-sm">
+                            Sem imagem
+                          </div>
                         )}
                       </div>
-                    </div>
-                  </Link>
-                </article>
-              ))}
+                      <div className="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            {categoriasNoticia.length > 0 ? (
+                              <div className="flex flex-wrap gap-1">
+                                {categoriasNoticia.map((cat, idx) => (
+                                  <span
+                                    key={cat._id ?? `${cat.slug}-${idx}`}
+                                    className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded text-white"
+                                    style={{
+                                      backgroundColor: cat.cor || "#1D4ED8",
+                                    }}
+                                  >
+                                    {cat.titulo}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span />
+                            )}
+                            <time className="text-xs text-slate-500 shrink-0">
+                              {formatarData(noticia.dataPublicacao)}
+                            </time>
+                          </div>
+                          <h3 className="font-bold text-lg text-slate-900 group-hover:text-blue-800 transition line-clamp-2">
+                            {noticia.titulo}
+                          </h3>
+                          {noticia.resumo && (
+                            <p className="mt-2 text-sm text-slate-600 line-clamp-3">
+                              {noticia.resumo}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  </article>
+                );
+              })}
             </div>
           )}
           <div className="mt-8">
@@ -209,9 +240,12 @@ export default async function HomePage() {
         </section>
       </main>
       <footer className="mx-auto px-4 py-8 space-y-12 bg-gray-200">
-          <div className="flex justify-center mx-auto max-w-6xl">
-            <span className="font-semibold text-xl">ATENÇÃO! - Esse site é apenas um componente para treino e estudo de programação. Nenhum conteúdo é real.</span>
-          </div>
+        <div className="flex justify-center mx-auto max-w-6xl">
+          <span className="font-semibold text-xl">
+            ATENÇÃO! - Esse site é apenas um componente para treino e estudo de
+            programação. Nenhum conteúdo é real.
+          </span>
+        </div>
       </footer>
     </div>
   );

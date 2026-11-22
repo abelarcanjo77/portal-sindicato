@@ -17,7 +17,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!noticia) {
     return {
       title: "Matéria não encontrada | Portal do Sindicato",
-      description: "A matéria solicitada não foi encontrada no Portal do Sindicato.",
+      description:
+        "A matéria solicitada não foi encontrada no Portal do Sindicato.",
     };
   }
 
@@ -25,6 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const descricao =
     noticia.resumo ||
     "Acompanhe as notícias, conquistas e comunicados oficiais no Portal do Sindicato.";
+  const categoriaPrincipal = noticia.categorias?.[0];
 
   return {
     title: titulo,
@@ -35,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: descricao,
       type: "article",
       publishedTime: noticia.dataPublicacao || undefined,
-      section: noticia.categoria?.titulo || undefined,
+      section: categoriaPrincipal?.titulo || undefined,
       tags: noticia.tags && noticia.tags.length > 0 ? noticia.tags : undefined,
       images: noticia.imagemUrl
         ? [
@@ -68,46 +70,35 @@ function formatarDataCompleta(dataIso: string) {
 
 export default async function NoticiaPage({ params }: PageProps) {
   const { slug } = await params;
-  const noticia = await getNoticiaPorSlug(slug);
-
-  const categorias = await getCategorias()
+  const [noticia, categorias] = await Promise.all([
+    getNoticiaPorSlug(slug),
+    getCategorias(),
+  ]);
 
   if (!noticia) {
     notFound();
   }
 
+  const categoriasNoticia = noticia.categorias ?? [];
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      {/* Barra Superior */}
-      {/* <header className="bg-blue-900 text-white shadow">
-        <div className="mx-auto max-w-4xl px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="font-bold text-lg hover:text-blue-200 transition">
-            ← Portal do Sindicato
-          </Link>
-          <Link
-            href="/studio"
-            className="text-xs bg-blue-800 hover:bg-blue-700 px-3 py-1.5 rounded border border-blue-700 transition"
-          >
-            Editar no Studio
-          </Link>
-        </div>
-      </header> */}
-
       <CabecalhoPortal categorias={categorias} />
 
       <main className="mx-auto max-w-4xl px-4 py-10">
         <article className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-10">
-          {/* Categoria e Data */}
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            {noticia.categoria && (
+          {/* Categorias e Data */}
+          <div className="flex flex-wrap items-center gap-2.5 mb-4">
+            {categoriasNoticia.map((cat, idx) => (
               <Link
-                href={`/categoria/${noticia.categoria.slug}`}
-                className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded text-white"
-                style={{ backgroundColor: noticia.categoria.cor || "#1D4ED8" }}
+                key={cat._id ?? `${cat.slug}-${idx}`}
+                href={`/categoria/${cat.slug}`}
+                className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded text-white hover:opacity-90 transition"
+                style={{ backgroundColor: cat.cor || "#1D4ED8" }}
               >
-                {noticia.categoria.titulo}
+                {cat.titulo}
               </Link>
-            )}
+            ))}
             <time className="text-sm text-slate-500">
               Publicado em {formatarDataCompleta(noticia.dataPublicacao)}
             </time>

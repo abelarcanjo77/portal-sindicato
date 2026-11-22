@@ -32,7 +32,6 @@ export default async function TodasNoticiasPage({ searchParams }: PageProps) {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-        
       <CabecalhoPortal categorias={categorias} />
 
       <main className="mx-auto max-w-6xl px-4 py-10">
@@ -51,60 +50,72 @@ export default async function TodasNoticiasPage({ searchParams }: PageProps) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {noticias.map((noticia) => (
-              <article
-                key={noticia._id}
-                className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 flex flex-col"
-              >
-                <Link
-                  href={`/noticias/${noticia.slug}`}
-                  className="group flex-1 flex flex-col"
+            {noticias.map((noticia) => {
+              const categoriasNoticia = noticia.categorias ?? [];
+
+              return (
+                <article
+                  key={noticia._id}
+                  className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 flex flex-col"
                 >
-                  <div className="relative h-48 w-full bg-slate-200">
-                    {noticia.imagemUrl ? (
-                      <Image
-                        src={noticia.imagemUrl}
-                        alt={noticia.titulo}
-                        fill
-                        className="object-cover group-hover:scale-105 transition duration-300"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-slate-400 text-sm">
-                        Sem imagem
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between gap-2 mb-2 text-xs">
-                        <time className="text-slate-500">
-                          {formatarData(noticia.dataPublicacao)}
-                        </time>
-                        {noticia.categoria?.titulo && (
-                          <span 
-                            style={{backgroundColor: `color-mix(in srgb, ${noticia.categoria.cor} 100%, transparent)`}} 
-                            className="rounded-sm px-2.5 py-0.5 font-medium text-white"
-                          >
-                            {noticia.categoria.titulo}
-                          </span>
-                        )}
-                      </div>
-
-                      <h2 className="font-bold text-lg text-slate-900 group-hover:text-blue-800 transition line-clamp-2">
-                        {noticia.titulo}
-                      </h2>
-
-                      {noticia.resumo && (
-                        <p className="mt-2 text-sm text-slate-600 line-clamp-3">
-                          {noticia.resumo}
-                        </p>
+                  <Link
+                    href={`/noticias/${noticia.slug}`}
+                    className="group flex-1 flex flex-col"
+                  >
+                    <div className="relative h-48 w-full bg-slate-200">
+                      {noticia.imagemUrl ? (
+                        <Image
+                          src={noticia.imagemUrl}
+                          alt={noticia.titulo}
+                          fill
+                          className="object-cover group-hover:scale-105 transition duration-300"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-slate-400 text-sm">
+                          Sem imagem
+                        </div>
                       )}
                     </div>
-                  </div>
-                </Link>
-              </article>
-            ))}
+
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-2 text-xs">
+                          <time className="text-slate-500 shrink-0">
+                            {formatarData(noticia.dataPublicacao)}
+                          </time>
+
+                          {categoriasNoticia.length > 0 && (
+                            <div className="flex flex-wrap justify-end gap-1.5">
+                              {categoriasNoticia.map((cat, idx) => (
+                                <span
+                                  key={cat._id ?? `${cat.slug}-${idx}`}
+                                  style={{
+                                    backgroundColor: cat.cor || "#1D4ED8",
+                                  }}
+                                  className="rounded-sm px-2.5 py-0.5 font-medium text-white"
+                                >
+                                  {cat.titulo}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <h2 className="font-bold text-lg text-slate-900 group-hover:text-blue-800 transition line-clamp-2">
+                          {noticia.titulo}
+                        </h2>
+
+                        {noticia.resumo && (
+                          <p className="mt-2 text-sm text-slate-600 line-clamp-3">
+                            {noticia.resumo}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </article>
+              );
+            })}
           </div>
         )}
 
