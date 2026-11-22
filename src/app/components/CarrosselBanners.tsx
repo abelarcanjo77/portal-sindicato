@@ -73,7 +73,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
             banner.urlDestino.startsWith("https://");
 
           const conteudoBotao = (
-            <span className="flex flex-col items-center justify-center rounded-md bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-2.5 sm:px-8 sm:py-3 text-center text-slate-950 shadow-lg ring-1 ring-black/15 transition">
+            <span className="flex flex-col items-center justify-center rounded-md bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-2.5 sm:px-8 sm:py-3 text-center text-slate-950 shadow-lg border-b border-r border-black/15 transition">
               <span className="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-wide leading-tight">
                 {banner.textoBotao}
               </span>
@@ -87,7 +87,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
 
           return (
             <SwiperSlide key={banner._id}>
-              <div className="relative w-full aspect-[16/7] sm:aspect-[21/7] md:aspect-[1920/460] max-h-[360px] min-h-[230px] overflow-hidden bg-slate-900">
+              <div className="relative w-full aspect-[16/7] sm:aspect-[21/7] md:aspect-[1920/460] max-h-[350px] min-h-[230px] overflow-hidden bg-slate-900">
                 <Image
                   src={banner.imagemUrl}
                   alt={banner.titulo}
