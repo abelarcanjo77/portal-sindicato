@@ -10,7 +10,7 @@ interface WebhookPayload {
 
 export async function POST(req: NextRequest) {
   try {
-    const secret = req.nextUrl.searchParams.get("secret");
+    const secret = req.headers.get("x-revalidate-secret");
 
     if (!process.env.SANITY_REVALIDATE_SECRET || secret !== process.env.SANITY_REVALIDATE_SECRET) {
       return NextResponse.json({ message: "Token de revalidação inválido" }, { status: 401 });
