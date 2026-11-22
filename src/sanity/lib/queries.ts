@@ -22,6 +22,21 @@ export interface NoticiaResumo {
   };
 }
 
+export interface NoticiaResumoCategoria {
+  _id: string;
+  titulo: string;
+  slug: string;
+  resumo?: string;
+  dataPublicacao?: string;
+  imagemUrl?: string;
+}
+
+export interface ResultadoCategoriaPaginada {
+  noticias: NoticiaResumoCategoria[];
+  total: number;
+}
+
+
 // Busca até 3 matérias marcadas como "Destaque Principal"
 export async function getNoticiasDestaque(): Promise<NoticiaResumo[]> {
   const query = `*[_type == "noticia" && destaqueHome == true] | order(dataPublicacao desc)[0...3] {
@@ -74,9 +89,15 @@ export async function getCategorias(): Promise<Categoria[]> {
   return client.fetch(query, {}, { next: { revalidate: 60 } });
 }
 
+export interface BlocoPortableText {
+  _key?: string;
+  _type: string;
+  [key: string]: unknown;
+}
+
 export interface NoticiaCompleta extends NoticiaResumo {
   tags?: string[];
-  conteudo: any[];
+  conteudo: BlocoPortableText[];
 }
 
 export async function getNoticiaPorSlug(slug: string): Promise<NoticiaCompleta | null> {
@@ -171,4 +192,75 @@ export async function buscarNoticias(termo: string): Promise<NoticiaResumo[]> {
   }`;
 
   return client.fetch(query, { termo, padrao }, { next: { revalidate: 60 } });
+}
+
+export async function getNoticiasPorCategoriaPaginada(
+  slug: string,
+  pagina = 1,
+  porPagina = 6
+) : Promise<ResultadoCategoriaPaginada> {
+  const inicio = (pagina - 1) * porPagina;
+  const fim = inicio + porPagina;
+
+  return client.fetch(
+    `{
+      "noticias": *[_type == "noticia" && categoria->slug.current == $slug] | order(dataPublicacao desc) [$inicio...$fim] {
+        _id,
+        titulo,
+        "slug": slug.current,
+        resumo,
+        dataPublicacao,
+        "imagemUrl": imagemDestaque.asset->url
+      },
+      "total": count(*[_type == "noticia" && categoria->slug.current == $slug])
+    }`,
+    { slug, inicio, fim }
+  );
+}
+
+
+export interface NoticiaGeralItem {
+  _id: string;
+  titulo: string;
+  slug: string;
+  resumo?: string;
+  dataPublicacao?: string;
+  imagemUrl?: string;
+  categoria?: {
+    titulo: string;
+    slug: string;
+    cor?: string;
+  };
+}
+
+export interface ResultadoTodasNoticiasPaginadas {
+  noticias: NoticiaGeralItem[];
+  total: number;
+}
+
+export async function getTodasNoticiasPaginada(
+  pagina = 1,
+  porPagina = 9
+): Promise<ResultadoTodasNoticiasPaginadas> {
+  const inicio = (pagina - 1) * porPagina;
+  const fim = inicio + porPagina;
+
+  const query = `{
+    "noticias": *[_type == "noticia"] | order(dataPublicacao desc, _createdAt desc) [$inicio...$fim] {
+      _id,
+      titulo,
+      "slug": slug.current,
+      resumo,
+      dataPublicacao,
+      "imagemUrl": imagemDestaque.asset->url,
+      categoria->{
+        titulo,
+        "slug": slug.current,
+        cor
+      }
+    },
+    "total": count(*[_type == "noticia"])
+  }`;
+
+  return client.fetch(query, { inicio, fim }, { next: { revalidate: 60 } });
 }

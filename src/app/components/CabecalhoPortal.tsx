@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Categoria } from "@/sanity/lib/queries";
+import { BarraNavegacao } from "./BarraNavegacao";
 
 interface CabecalhoPortalProps {
   categorias: Categoria[];
@@ -9,7 +10,6 @@ interface CabecalhoPortalProps {
 
 export function CabecalhoPortal({
   categorias,
-  categoriaAtivaSlug,
   termoBusca = "",
 }: CabecalhoPortalProps) {
   return (
@@ -52,36 +52,7 @@ export function CabecalhoPortal({
       </div>
 
       {/* Barra de Categorias */}
-      <nav className="bg-blue-950 border-t border-blue-800">
-        <div className="mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-4 overflow-x-auto text-sm">
-          <Link
-            href="/"
-            className={`whitespace-nowrap transition ${
-              !categoriaAtivaSlug
-                ? "font-bold text-white underline underline-offset-4"
-                : "text-blue-200 hover:text-white"
-            }`}
-          >
-            Início
-          </Link>
-          {categorias.map((cat) => {
-            const ativa = cat.slug === categoriaAtivaSlug;
-            return (
-              <Link
-                key={cat._id}
-                href={`/categoria/${cat.slug}`}
-                className={`whitespace-nowrap transition ${
-                  ativa
-                    ? "font-bold text-white underline underline-offset-4"
-                    : "text-blue-200 hover:text-white"
-                }`}
-              >
-                {cat.titulo}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      <BarraNavegacao categorias={categorias}/>
     </header>
   );
 }

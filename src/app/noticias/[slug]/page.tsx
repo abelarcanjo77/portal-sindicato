@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getNoticiaPorSlug } from "@/sanity/lib/queries";
+import { getCategorias, getNoticiaPorSlug } from "@/sanity/lib/queries";
 import { CorpoMateria } from "@/app/components/CorpoMateria";
+import { CabecalhoPortal } from "@/app/components/CabecalhoPortal";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -69,6 +70,8 @@ export default async function NoticiaPage({ params }: PageProps) {
   const { slug } = await params;
   const noticia = await getNoticiaPorSlug(slug);
 
+  const categorias = await getCategorias()
+
   if (!noticia) {
     notFound();
   }
@@ -76,7 +79,7 @@ export default async function NoticiaPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Barra Superior */}
-      <header className="bg-blue-900 text-white shadow">
+      {/* <header className="bg-blue-900 text-white shadow">
         <div className="mx-auto max-w-4xl px-4 py-4 flex items-center justify-between">
           <Link href="/" className="font-bold text-lg hover:text-blue-200 transition">
             ← Portal do Sindicato
@@ -88,7 +91,9 @@ export default async function NoticiaPage({ params }: PageProps) {
             Editar no Studio
           </Link>
         </div>
-      </header>
+      </header> */}
+
+      <CabecalhoPortal categorias={categorias} />
 
       <main className="mx-auto max-w-4xl px-4 py-10">
         <article className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-10">

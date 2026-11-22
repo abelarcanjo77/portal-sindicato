@@ -145,7 +145,7 @@ export default async function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {ultimas.map((noticia) => (
+              {ultimas.slice(0, 6).map((noticia) => (
                 <article
                   key={noticia._id}
                   className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 flex flex-col"
@@ -198,6 +198,14 @@ export default async function HomePage() {
               ))}
             </div>
           )}
+          <div className="mt-8">
+            <Link
+              href="/ultimasNoticias"
+              className="flex w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-6 py-4 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-100 transition"
+            >
+              Ver todas as notícias →
+            </Link>
+          </div>
         </section>
       </main>
       <footer className="mx-auto px-4 py-8 space-y-12 bg-gray-200">

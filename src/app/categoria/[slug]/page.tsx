@@ -5,12 +5,10 @@ import { notFound } from "next/navigation";
 import {
   getCategoriaPorSlug,
   getCategorias,
-  getNoticiasPorCategoria,
+  getNoticiasPorCategoriaPaginada,
 } from "@/sanity/lib/queries";
-
-interface PageProps {
-  params: Promise<{ slug: string }>;
-}
+import { Paginacao } from "@/app/components/Paginacao";
+import { CabecalhoPortal } from "@/app/components/CabecalhoPortal";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -37,7 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-function formatarData(dataIso: string) {
+function formatarData(dataIso?: string) {
   if (!dataIso) return "";
   return new Date(dataIso).toLocaleDateString("pt-BR", {
     day: "2-digit",
@@ -46,14 +44,25 @@ function formatarData(dataIso: string) {
   });
 }
 
-export default async function CategoriaPage({ params }: PageProps) {
-  const { slug } = await params;
+interface PageProps {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
+}
 
-  const [categoria, noticias, todasCategorias] = await Promise.all([
+export default async function CategoriaPage({ params, searchParams }: PageProps) {
+  const { slug } = await params;
+  const { page } = await searchParams;
+  const paginaAtual = Math.max(1, Number(page) || 1);
+  const porPagina = 6;
+  
+  const [categoria, resultado, todasCategorias] = await Promise.all([
     getCategoriaPorSlug(slug),
-    getNoticiasPorCategoria(slug),
+    getNoticiasPorCategoriaPaginada(slug, paginaAtual, porPagina),
     getCategorias(),
   ]);
+
+  const { noticias, total } = resultado;
+  const totalPaginas = Math.ceil(total / porPagina);
 
   if (!categoria) {
     notFound();
@@ -61,41 +70,8 @@ export default async function CategoriaPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="bg-blue-900 text-white shadow">
-        <div className="mx-auto max-w-6xl px-4 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <Link href="/" className="text-2xl font-bold tracking-tight hover:text-blue-200 transition">
-            Portal do Sindicato
-          </Link>
-          <Link
-            href="/studio"
-            className="self-start md:self-auto text-xs bg-blue-800 hover:bg-blue-700 px-3 py-2 rounded border border-blue-700 transition"
-          >
-            Área do Editor
-          </Link>
-        </div>
-
-        <nav className="bg-blue-950 border-t border-blue-800">
-          <div className="mx-auto max-w-6xl px-4 py-2.5 flex items-center gap-4 overflow-x-auto text-sm">
-            <Link href="/" className="text-blue-200 hover:text-white whitespace-nowrap transition">
-              Início
-            </Link>
-            {todasCategorias.map((cat) => {
-              const ativa = cat.slug === slug;
-              return (
-                <Link
-                  key={cat._id}
-                  href={`/categoria/${cat.slug}`}
-                  className={`whitespace-nowrap transition ${
-                    ativa ? "font-bold text-white underline underline-offset-4" : "text-blue-200 hover:text-white"
-                  }`}
-                >
-                  {cat.titulo}
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
-      </header>
+      
+      <CabecalhoPortal categorias={todasCategorias} />
 
       <main className="mx-auto max-w-6xl px-4 py-10">
         <div className="mb-8 border-b border-slate-200 pb-4 flex items-center gap-3">
@@ -152,6 +128,11 @@ export default async function CategoriaPage({ params }: PageProps) {
             ))}
           </div>
         )}
+        <Paginacao
+          paginaAtual={paginaAtual}
+          totalPaginas={totalPaginas}
+          baseUrl={`/categoria/${slug}`}
+        />
       </main>
     </div>
   );
