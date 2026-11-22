@@ -121,7 +121,7 @@ export default defineType({
         },
         {
           name: 'videoEmbed',
-          title: 'Incorporar Vídeo (YouTube/Vimeo)',
+          title: 'Incorporar Vídeo (YouTube/Vimeo/Instagram/TikTok)',
           type: 'object',
           fields: [{ name: 'url', title: 'URL do Vídeo', type: 'url' }],
         },

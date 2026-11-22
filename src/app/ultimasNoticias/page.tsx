@@ -111,7 +111,7 @@ export default async function TodasNoticiasPage({ searchParams }: PageProps) {
         <Paginacao
           paginaAtual={paginaAtual}
           totalPaginas={totalPaginas}
-          baseUrl="/noticias"
+          baseUrl="/ultimasNoticias"
         />
       </main>
     </div>

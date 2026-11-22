@@ -15,9 +15,10 @@ export function Paginacao({
 
   const temAnterior = paginaAtual > 1;
   const temProxima = paginaAtual < totalPaginas;
+  const separador = baseUrl.includes("?") ? "&" : "?";
 
   const gerarHref = (pagina: number) =>
-    pagina === 1 ? baseUrl : `${baseUrl}?page=${pagina}`;
+    pagina === 1 ? baseUrl : `${baseUrl}${separador}page=${pagina}`;
 
   return (
     <nav
