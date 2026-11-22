@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
+  filtrarCategoriasVisiveis,
   getCategoriaPorSlug,
   getCategorias,
   getNoticiasPorCategoriaPaginada,
@@ -91,7 +92,9 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {noticias.map((noticia) => {
-              const categoriasNoticia = noticia.categorias ?? [];
+              const categoriasNoticia = filtrarCategoriasVisiveis(
+                noticia.categorias
+              );
 
               return (
                 <article

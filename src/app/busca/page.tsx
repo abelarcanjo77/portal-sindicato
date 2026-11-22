@@ -1,6 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { buscarNoticias, getCategorias } from "@/sanity/lib/queries";
+import {
+  buscarNoticias,
+  filtrarCategoriasVisiveis,
+  getCategorias,
+} from "@/sanity/lib/queries";
 import { Paginacao } from "@/app/components/Paginacao";
 import { BarraNavegacao } from "@/app/components/BarraNavegacao";
 
@@ -93,7 +97,9 @@ export default async function BuscaPage({ searchParams }: PageProps) {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {resultados.map((noticia) => {
-                const categoriasNoticia = noticia.categorias ?? [];
+                const categoriasNoticia = filtrarCategoriasVisiveis(
+                  noticia.categorias
+                );
 
                 return (
                   <article

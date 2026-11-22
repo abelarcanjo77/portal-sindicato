@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getCategorias, getNoticiaPorSlug } from "@/sanity/lib/queries";
+import {
+  filtrarCategoriasVisiveis,
+  getCategorias,
+  getNoticiaPorSlug,
+} from "@/sanity/lib/queries";
 import { CorpoMateria } from "@/app/components/CorpoMateria";
 import { CabecalhoPortal } from "@/app/components/CabecalhoPortal";
 
@@ -26,7 +30,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const descricao =
     noticia.resumo ||
     "Acompanhe as notícias, conquistas e comunicados oficiais no Portal do Sindicato.";
-  const categoriaPrincipal = noticia.categorias?.[0];
+  const categoriasVisiveis = filtrarCategoriasVisiveis(noticia.categorias);
+  const categoriaPrincipal =
+    categoriasVisiveis[0] ?? noticia.categorias?.[0];
 
   return {
     title: titulo,
@@ -79,7 +85,7 @@ export default async function NoticiaPage({ params }: PageProps) {
     notFound();
   }
 
-  const categoriasNoticia = noticia.categorias ?? [];
+  const categoriasNoticia = filtrarCategoriasVisiveis(noticia.categorias);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">

@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Paginacao } from "@/app/components/Paginacao";
-import { getCategorias, getTodasNoticiasPaginada } from "@/sanity/lib/queries";
+import {
+  filtrarCategoriasVisiveis,
+  getCategorias,
+  getTodasNoticiasPaginada,
+} from "@/sanity/lib/queries";
 import { CabecalhoPortal } from "../components/CabecalhoPortal";
 
 interface PageProps {
@@ -51,7 +55,9 @@ export default async function TodasNoticiasPage({ searchParams }: PageProps) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {noticias.map((noticia) => {
-              const categoriasNoticia = noticia.categorias ?? [];
+              const categoriasNoticia = filtrarCategoriasVisiveis(
+                noticia.categorias
+              );
 
               return (
                 <article

@@ -246,3 +246,14 @@ export async function getTodasNoticiasPaginada(
 
   return client.fetch(query, { inicio, fim }, { next: { revalidate: 60 } });
 }
+
+const SLUGS_GALERIA_OCULTOS = new Set([
+  "galeria-de-fotos",
+  "galeria-de-videos",
+  "multimidia",
+]);
+
+export function filtrarCategoriasVisiveis(categorias?: Categoria[]): Categoria[] {
+  if (!categorias || categorias.length === 0) return [];
+  return categorias.filter((cat) => !SLUGS_GALERIA_OCULTOS.has(cat.slug));
+}

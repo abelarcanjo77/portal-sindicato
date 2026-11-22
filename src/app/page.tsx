@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
+  filtrarCategoriasVisiveis,
   getCategorias,
   getNoticiasDestaque,
   getUltimasNoticias,
@@ -25,7 +26,9 @@ export default async function HomePage() {
 
   const manchetePrincipal = destaques[0];
   const destaquesSecundarios = destaques.slice(1, 3);
-  const categoriasManchete = manchetePrincipal?.categorias ?? [];
+  const categoriasManchete = filtrarCategoriasVisiveis(
+    manchetePrincipal?.categorias
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -58,7 +61,7 @@ export default async function HomePage() {
                     )}
                   </div>
                   <div className="p-6">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                       {categoriasManchete.map((cat, idx) => (
                         <span
                           key={cat._id ?? `${cat.slug}-${idx}`}
@@ -70,9 +73,13 @@ export default async function HomePage() {
                           {cat.titulo}
                         </span>
                       ))}
-                      <time className="text-xs text-slate-500">
-                        {formatarData(manchetePrincipal.dataPublicacao)}
-                      </time>
+                      
+                      <div className="flex items-center gap-2">
+                        <time className="text-xs text-slate-500">
+                          {formatarData(manchetePrincipal.dataPublicacao)}
+                        </time>
+                        <span>🗓️</span>
+                      </div>
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-slate-900 group-hover:text-blue-800 transition">
                       {manchetePrincipal.titulo}
@@ -89,7 +96,9 @@ export default async function HomePage() {
               {/* Destaques Secundários */}
               <div className="flex flex-col gap-6">
                 {destaquesSecundarios.map((item) => {
-                  const categoriasItem = item.categorias ?? [];
+                  const categoriasItem = filtrarCategoriasVisiveis(
+                    item.categorias
+                  );
 
                   return (
                     <article
@@ -164,7 +173,9 @@ export default async function HomePage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {ultimas.slice(0, 6).map((noticia) => {
-                const categoriasNoticia = noticia.categorias ?? [];
+                const categoriasNoticia = filtrarCategoriasVisiveis(
+                  noticia.categorias
+                );
 
                 return (
                   <article
