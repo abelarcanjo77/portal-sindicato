@@ -12,7 +12,7 @@ export function CabecalhoPortal({
   termoBusca = "",
 }: CabecalhoPortalProps) {
   return (
-    <header className="bg-blue-800 text-white shadow-md">
+    <header className="bg-blue-900 text-white shadow-md">
       <div className="mx-auto max-w-6xl px-4 py-5 md:py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="min-w-0">
           <Link

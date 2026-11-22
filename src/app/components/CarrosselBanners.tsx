@@ -73,7 +73,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
             banner.urlDestino.startsWith("https://");
 
           const conteudoBotao = (
-            <span className="flex flex-col items-center justify-center rounded-md bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-2.5 sm:px-8 sm:py-3 text-center text-slate-950 shadow-lg ring-0 ring-black/15 transition">
+            <span className="flex flex-col items-center justify-center rounded-md bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-2.5 sm:px-8 sm:py-3 text-center text-slate-950 shadow-lg ring-1 ring-black/15 transition">
               <span className="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-wide leading-tight">
                 {banner.textoBotao}
               </span>
@@ -87,7 +87,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
 
           return (
             <SwiperSlide key={banner._id}>
-              <div className="relative w-full aspect-[16/7] sm:aspect-[21/7] md:aspect-[1920/460] max-h-[480px] min-h-[230px] overflow-hidden bg-slate-900">
+              <div className="relative w-full aspect-[16/7] sm:aspect-[21/7] md:aspect-[1920/460] max-h-[360px] min-h-[230px] overflow-hidden bg-slate-900">
                 <Image
                   src={banner.imagemUrl}
                   alt={banner.titulo}
@@ -130,7 +130,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
       {temVarios && (
         <div
           aria-label="Selecionar banner"
-          className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 rounded-full bg-slate-950/45 px-3 py-1.5 backdrop-blur-xs ring-0 ring-gray-500"
+          className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 rounded-full bg-slate-950/45 px-3 py-1.5 backdrop-blur-xs ring-1 ring-white/15"
         >
           {banners.map((banner, idx) => {
             const ativo = idx === activeIndex;
@@ -152,13 +152,13 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
         </div>
       )}
 
-      {/* Setas laterais customizadas */}
+      {/* Setas laterais customizadas (ocultas no mobile) */}
       {temVarios && (
         <>
           <button
             type="button"
             aria-label="Banner anterior"
-            className="banner-prev absolute left-2 sm:left-5 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-black/35 hover:bg-black/60 text-white backdrop-blur-xs transition opacity-85 sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer"
+            className="banner-prev hidden sm:flex absolute left-2 sm:left-5 top-1/2 -translate-y-1/2 z-20 h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-black/35 hover:bg-black/60 text-white backdrop-blur-xs transition sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer"
           >
             <svg
               className="h-6 w-6"
@@ -178,7 +178,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
           <button
             type="button"
             aria-label="Próximo banner"
-            className="banner-next absolute right-2 sm:right-5 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-black/35 hover:bg-black/60 text-white backdrop-blur-xs transition opacity-85 sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer"
+            className="banner-next hidden sm:flex absolute right-2 sm:right-5 top-1/2 -translate-y-1/2 z-20 h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-black/35 hover:bg-black/60 text-white backdrop-blur-xs transition sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer"
           >
             <svg
               className="h-6 w-6"
