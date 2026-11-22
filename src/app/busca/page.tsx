@@ -7,7 +7,7 @@ interface PageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
 }
 
-const ITENS_POR_PAGINA = 9;
+const ITENS_POR_PAGINA = 6;
 
 function formatarData(dataIso: string) {
   if (!dataIso) return "";

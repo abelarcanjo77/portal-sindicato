@@ -12,31 +12,26 @@ export const structure: StructureResolver = (S) =>
             .title("Todas as Notícias")
             .defaultOrdering([{ field: "dataPublicacao", direction: "desc" }])
         ),
+
       S.divider(),
+
       S.listItem()
-        .title("Notícias — Geral")
+        .title("Notícias por Categoria")
         .child(
-          S.documentTypeList("noticia")
-            .title("Notícias — Geral")
-            .filter('_type == "noticia" && categoria->slug.current == "noticia"')
-            .defaultOrdering([{ field: "dataPublicacao", direction: "desc" }])
+          S.documentTypeList("categoria")
+            .title("Categorias")
+            .child((categoryId) =>
+              S.documentTypeList("noticia")
+                .title("Notícias da Categoria")
+                .filter('_type == "noticia" && categoria._ref == $categoryId')
+                .params({ categoryId })
+                .defaultOrdering([
+                  { field: "dataPublicacao", direction: "desc" },
+                ])
+            )
         ),
-      S.listItem()
-        .title("Notícias — Jurídico")
-        .child(
-          S.documentTypeList("noticia")
-            .title("Notícias — Jurídico")
-            .filter('_type == "noticia" && categoria->slug.current == "juridico"')
-            .defaultOrdering([{ field: "dataPublicacao", direction: "desc" }])
-        ),
-        S.listItem()
-        .title("Notícias — Reunião Setorial")
-        .child(
-          S.documentTypeList("noticia")
-            .title("Notícias — Reunião Setorial")
-            .filter('_type == "noticia" && categoria->slug.current == "reuniao-setorial"')
-            .defaultOrdering([{ field: "dataPublicacao", direction: "desc" }])
-        ),
+
       S.divider(),
-      S.documentTypeListItem("categoria").title("Categorias"),
+
+      S.documentTypeListItem("categoria").title("Gerenciar Categorias"),
     ]);
