@@ -1,23 +1,100 @@
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 
-function extrairEmbedVideo(url?: string): string | null {
+type EmbedInfo = {
+  src: string;
+  aspectClass: string;
+};
+
+function extrairEmbedVideo(url?: string): EmbedInfo | null {
   if (!url) return null;
 
-  // YouTube (watch?v=, youtu.be/, shorts/, embed/)
-  const ytMatch = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-  );
-  if (ytMatch?.[1]) {
-    return `https://www.youtube.com/embed/${ytMatch[1]}`;
+  try {
+    const parsed = new URL(url.trim());
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      return null;
+    }
+
+    const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
+
+    // 1. YouTube (watch?v=, youtu.be/, shorts/, embed/)
+    if (
+      host === "youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "youtu.be"
+    ) {
+      const ytMatch = parsed.href.match(
+        /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+      );
+      if (ytMatch?.[1]) {
+        return {
+          src: `https://www.youtube.com/embed/${ytMatch[1]}`,
+          aspectClass: "aspect-video max-w-none",
+        };
+      }
+    }
+
+    // 2. Vimeo
+    if (host === "vimeo.com" || host === "player.vimeo.com") {
+      const vimeoMatch = parsed.pathname.match(/^\/(?:video\/)?(\d+)/);
+      if (vimeoMatch?.[1]) {
+        return {
+          src: `https://player.vimeo.com/video/${vimeoMatch[1]}`,
+          aspectClass: "aspect-video max-w-none",
+        };
+      }
+    }
+
+    // 3. TikTok (@usuario/video/ID ou /embed/v2/ID)
+    if (host === "tiktok.com" || host === "m.tiktok.com") {
+      const tiktokMatch = parsed.pathname.match(
+        /(?:\/@[^/]+\/video\/|\/embed\/v2\/)(\d+)/
+      );
+      if (tiktokMatch?.[1]) {
+        return {
+          src: `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`,
+          aspectClass: "aspect-[9/16] max-w-[380px] mx-auto",
+        };
+      }
+    }
+
+    // 4. Instagram (/p/CODIGO, /reel/CODIGO, /tv/CODIGO)
+    if (host === "instagram.com") {
+      const igMatch = parsed.pathname.match(
+        /^\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/
+      );
+      if (igMatch?.[1]) {
+        const tipo = parsed.pathname.startsWith("/reel/") ? "reel" : "p";
+        return {
+          src: `https://www.instagram.com/${tipo}/${igMatch[1]}/embed`,
+          aspectClass: "aspect-[4/5] max-w-[420px] mx-auto",
+        };
+      }
+    }
+  } catch {
+    return null;
   }
 
-  // Vimeo
-  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
-  if (vimeoMatch?.[1]) {
-    return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+  return null;
+}
+
+function sanitizarUrl(url?: string, permitirRelativo = false): string | null {
+  if (!url) return null;
+  const limpa = url.trim();
+
+  if (permitirRelativo && limpa.startsWith("/") && !limpa.startsWith("//")) {
+    return limpa;
   }
 
-  return url;
+  try {
+    const parsed = new URL(limpa);
+    if (["https:", "http:", "mailto:", "tel:"].includes(parsed.protocol)) {
+      return limpa;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
 }
 
 const componentesPortableText: PortableTextComponents = {
@@ -50,28 +127,23 @@ const componentesPortableText: PortableTextComponents = {
     ),
   },
   marks: {
-    link: ({ children, value }) => (
-      <a
-        href={value?.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-700 underline hover:text-blue-900"
-      >
-        {children}
-      </a>
-    ),
-    left: ({ children }: { children?: React.ReactNode }) => (
-      <span className="block text-left">{children}</span>
-    ),
-    center: ({ children }: { children?: React.ReactNode }) => (
-      <span className="block text-center">{children}</span>
-    ),
-    right: ({ children }: { children?: React.ReactNode }) => (
-      <span className="block text-right">{children}</span>
-    ),
-    justify: ({ children }: { children?: React.ReactNode }) => (
-      <span className="block text-justify">{children}</span>
-    ),
+    link: ({ children, value }) => {
+      const hrefSeguro = sanitizarUrl(value?.href, true);
+      if (!hrefSeguro) {
+        return <span className="text-slate-600">{children}</span>;
+      }
+
+      const ehExterno = hrefSeguro.startsWith("http");
+      return (
+        <a
+          href={hrefSeguro}
+          {...(ehExterno ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          className="text-blue-700 underline hover:text-blue-900"
+        >
+          {children}
+        </a>
+      );
+    },
   },
   types: {
     image: ({ value }) => {
@@ -93,14 +165,17 @@ const componentesPortableText: PortableTextComponents = {
       );
     },
     videoEmbed: ({ value }) => {
-      const embedUrl = extrairEmbedVideo(value?.url);
-      if (!embedUrl) return null;
+      const embed = extrairEmbedVideo(value?.url);
+      if (!embed) return null;
+
       return (
-        <div className="my-8 aspect-video w-full overflow-hidden rounded-xl shadow-sm bg-black">
+        <div
+          className={`my-8 w-full overflow-hidden rounded-xl shadow-sm bg-slate-950 ${embed.aspectClass}`}
+        >
           <iframe
-            src={embedUrl}
+            src={embed.src}
             title="Vídeo incorporado"
-            className="h-full w-full"
+            className="h-full w-full border-0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
