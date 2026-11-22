@@ -72,16 +72,17 @@ export default defineType({
       group: 'config',
     }),
     defineField({
-      name: "categorias", // ou mantenha "categoria" se preferir não mexer em outros campos agora
-      title: "Categorias",
-      type: "array",
+      name: 'categorias',
+      title: 'Categorias',
+      type: 'array',
+      group: 'config',
       of: [
         defineArrayMember({
-          type: "reference",
-          to: [{ type: "categoria" }],
+          type: 'reference',
+          to: [{ type: 'categoria' }],
         }),
       ],
-      validation: (Rule) => Rule.min(1).error("Selecione pelo menos uma categoria"),
+      validation: (Rule) => Rule.min(1).error('Selecione pelo menos uma categoria'),
     }),
     defineField({
       name: 'tags',
