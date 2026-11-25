@@ -14,10 +14,10 @@ export function CabecalhoPortal({
 }: CabecalhoPortalProps) {
   return (
     <header className="bg-blue-900 text-white shadow-md">
-      <div className="mx-auto max-w-6xl px-4 py-5 md:py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="mx-auto max-w-6xl px-4 py-5 md:py-4 flex flex-col items-center md:flex-row md:items-center md:justify-between gap-4">
         <div className="min-w-0 flex items-center gap-3">
           <Image 
-           src="img/logo-topo-site.svg"
+           src="/img/logo-topo-site.svg"
            alt="logo do site"
            width={80}
            height={80}
@@ -36,7 +36,7 @@ export function CabecalhoPortal({
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
+        <div className="flex flex-row items-center gap-2.5 w-full md:w-auto">
           <form
             action="/busca"
             method="GET"
@@ -58,12 +58,20 @@ export function CabecalhoPortal({
             </button>
           </form>
 
-          <Link
-            href="/studio"
-            className="inline-flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/15 px-3.5 py-2 text-xs font-semibold text-blue-100 hover:text-white ring-1 ring-white/20 transition whitespace-nowrap"
-          >
-            Área do Editor
-          </Link>
+          <div>
+            <Link
+              href="/studio"
+              className="lg:hidden inline-flex items-center justify-center rounded-lg bg-yellow-500 hover:bg-white/15 px-2 py-1 text-xl text-black hover:text-white ring-1 ring-white/20 transition whitespace-nowrap"
+            >
+              ✎
+            </Link>
+            <Link
+              href="/studio"
+              className="hidden lg:inline-flex items-center justify-center rounded-lg bg-yellow-500 hover:bg-white/15 px-3.5 py-2 text-xs font-semibold text-black hover:text-white ring-1 ring-white/20 transition whitespace-nowrap"
+            >
+              Área do Editor
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -73,21 +73,34 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
             banner.urlDestino.startsWith("https://");
 
           const conteudoBotao = (
-            <span className="flex flex-col items-center justify-center rounded-md bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-2.5 sm:px-8 sm:py-3 text-center text-slate-950 shadow-lg border-b border-r border-black/15 transition">
-              <span className="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-wide leading-tight">
-                {banner.textoBotao}
-              </span>
-              {banner.subtextoBotao && (
-                <span className="mt-0.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-900/90">
-                  {banner.subtextoBotao}
+            <span className="flex justify-center">
+              <span className="sm:hidden flex flex-row gap-2 sm:flex-col items-center justify-center rounded-md bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-2.5 sm:px-8 sm:py-3 text-center text-slate-950 shadow-lg border-b border-r border-black/15 transition">
+                {banner.subtextoBotao && (
+                  <span className="text-[14px] font-bold uppercase tracking-wider text-slate-900/90">
+                    ↪
+                  </span>
+                )}
+                <span className="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-wide leading-tight">
+                  {banner.textoBotao}
                 </span>
-              )}
+              </span>
+
+              <span className="hidden sm:inline-flex flex-col items-center justify-center min-w-sm rounded-md bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-10 py-2 text-center text-slate-950 shadow-lg border-b border-r border-black/15 transition">
+                <span className="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-wide leading-tight">
+                  {banner.textoBotao}
+                </span>
+                {banner.subtextoBotao && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-900/90">
+                    {banner.subtextoBotao}
+                  </span>
+                )}
+              </span>
             </span>
           );
 
           return (
             <SwiperSlide key={banner._id}>
-              <div className="relative w-full aspect-[16/7] sm:aspect-[21/7] md:aspect-[1920/460] max-h-[350px] min-h-[230px] overflow-hidden bg-slate-900">
+              <div className="relative w-full aspect-[16/10] sm:aspect-[21/10] md:aspect-[1920/800] max-h-[350px] min-h-[230px] overflow-hidden bg-slate-900">
                 <Image
                   src={banner.imagemUrl}
                   alt={banner.titulo}
@@ -102,7 +115,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
 
                 {/* Botão flutuante centralizado com respiro acima dos marcadores */}
-                <div className="absolute inset-x-0 bottom-12 sm:bottom-13 z-10 mx-auto max-w-4xl px-4 flex justify-center">
+                <div className="absolute inset-x-0 bottom-11 sm:bottom-12 z-10 mx-auto max-w-4xl px-4 flex justify-center">
                   {isExterno || banner.abrirNovaAba ? (
                     <a
                       href={banner.urlDestino}

@@ -7,6 +7,7 @@ import {
 } from "@/sanity/lib/queries";
 import { Paginacao } from "@/app/components/Paginacao";
 import { BarraNavegacao } from "@/app/components/BarraNavegacao";
+import { CabecalhoPortal } from "../components/CabecalhoPortal";
 
 interface PageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
@@ -43,33 +44,7 @@ export default async function BuscaPage({ searchParams }: PageProps) {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="bg-blue-900 text-white shadow">
-        <div className="mx-auto max-w-6xl px-4 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <Link
-            href="/"
-            className="text-2xl font-bold tracking-tight hover:text-blue-200 transition"
-          >
-            Portal do Sindicato
-          </Link>
-          <form action="/busca" method="GET" className="flex w-full md:w-96 gap-2">
-            <input
-              type="text"
-              name="q"
-              defaultValue={termo}
-              placeholder="Buscar matérias, tags ou temas..."
-              className="flex-1 rounded-lg bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="rounded-lg bg-blue-700 hover:bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition cursor-pointer"
-            >
-              Buscar
-            </button>
-          </form>
-        </div>
-
-        <BarraNavegacao categorias={categorias} />
-      </header>
+      <CabecalhoPortal categorias={categorias}/>
 
       <main className="mx-auto max-w-6xl px-4 py-10">
         <h1 className="text-2xl font-bold text-slate-900 mb-6">
