@@ -294,7 +294,6 @@ export interface PopupAviso {
   titulo: string;
   tipoMidia?: "imagem" | "video";
   imagemUrl?: string;
-  videoArquivoUrl?: string;
   videoUrl?: string;
   textoBotao: string;
   subtextoBotao?: string;
@@ -311,7 +310,6 @@ export async function getPopupAviso(): Promise<PopupAviso | null> {
       titulo,
       tipoMidia,
       "imagemUrl": imagem.asset->url,
-      "videoArquivoUrl": videoArquivo.asset->url,
       videoUrl,
       textoBotao,
       subtextoBotao,

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import type { PopupAviso } from "@/sanity/lib/queries";
 import Image from "next/image";
+import type { PopupAviso } from "@/sanity/lib/queries";
 
 interface PopupEntradaProps {
   popup: PopupAviso | null;
@@ -15,31 +15,28 @@ function extrairEmbedVideo(url?: string): {
 } {
   if (!url) return { embedUrl: null, isShort: false };
 
-  // YouTube Shorts
   const shortsMatch = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/);
   if (shortsMatch?.[1]) {
     return {
-      embedUrl: `https://www.youtube.com/embed/${shortsMatch[1]}?autoplay=1&mute=1&rel=0`,
+      embedUrl: `https://www.youtube.com/embed/${shortsMatch[1]}?rel=0`,
       isShort: true,
     };
   }
 
-  // YouTube padrão / youtu.be
   const ytMatch = url.match(
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/
   );
   if (ytMatch?.[1]) {
     return {
-      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&rel=0`,
+      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`,
       isShort: false,
     };
   }
 
-  // Vimeo
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch?.[1]) {
     return {
-      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&muted=1`,
+      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}`,
       isShort: false,
     };
   }
@@ -51,12 +48,10 @@ export function PopupEntrada({ popup }: PopupEntradaProps) {
   const [aberto, setAberto] = useState(false);
 
   const isVideo = popup?.tipoMidia === "video";
-  const videoDireto = popup?.videoArquivoUrl || (!extrairEmbedVideo(popup?.videoUrl).embedUrl ? popup?.videoUrl : undefined);
   const { embedUrl, isShort } = extrairEmbedVideo(popup?.videoUrl);
 
   const temMidiaValida = Boolean(
-    popup &&
-      (isVideo ? videoDireto || embedUrl : popup.imagemUrl)
+    popup && (isVideo ? Boolean(embedUrl) : Boolean(popup.imagemUrl))
   );
 
   useEffect(() => {
@@ -143,31 +138,20 @@ export function PopupEntrada({ popup }: PopupEntradaProps) {
 
         {/* Área de mídia autoajustável */}
         <div className="w-full bg-slate-950 flex items-center justify-center">
-          {isVideo ? (
-            embedUrl ? (
-              <div
-                className={`w-full ${
-                  isShort ? "aspect-[9/16] max-h-[70vh]" : "aspect-video"
-                }`}
-              >
-                <iframe
-                  src={embedUrl}
-                  title={popup.titulo}
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
-                  className="h-full w-full border-0"
-                />
-              </div>
-            ) : (
-              <video
-                src={videoDireto}
-                controls
-                autoPlay
-                muted
-                playsInline
-                className="w-full h-auto max-h-[70vh] object-contain"
+          {isVideo && embedUrl ? (
+            <div
+              className={`w-full ${
+                isShort ? "aspect-[9/16] max-h-[70vh]" : "aspect-video"
+              }`}
+            >
+              <iframe
+                src={embedUrl}
+                title={popup.titulo}
+                allow="fullscreen; picture-in-picture"
+                allowFullScreen
+                className="h-full w-full border-0"
               />
-            )
+            </div>
           ) : popup.imagemUrl ? (
             <Image
               src={popup.imagemUrl}

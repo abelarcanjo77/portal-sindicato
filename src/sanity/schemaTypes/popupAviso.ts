@@ -25,7 +25,7 @@ export const popupAviso = defineType({
       options: {
         list: [
           { title: "Imagem", value: "imagem" },
-          { title: "Vídeo (Arquivo MP4 ou YouTube)", value: "video" },
+          { title: "Vídeo (YouTube / Vimeo)", value: "video" },
         ],
         layout: "radio",
       },
@@ -46,18 +46,19 @@ export const popupAviso = defineType({
         }),
     }),
     defineField({
-      name: "videoArquivo",
-      title: "Arquivo de vídeo (MP4 / WebM)",
-      type: "file",
-      options: { accept: "video/*" },
-      hidden: ({ parent }) => parent?.tipoMidia !== "video",
-    }),
-    defineField({
       name: "videoUrl",
-      title: "Ou URL de vídeo (YouTube / Vimeo / MP4 externo)",
+      title: "URL do vídeo (YouTube / Vimeo)",
       type: "url",
-      description: "Use se não enviar um arquivo acima.",
+      description: "Cole o link do vídeo no YouTube, Shorts ou Vimeo.",
       hidden: ({ parent }) => parent?.tipoMidia !== "video",
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const parent = context.parent as { tipoMidia?: string };
+          if (parent?.tipoMidia === "video" && !value) {
+            return "Informe a URL do vídeo no YouTube ou Vimeo.";
+          }
+          return true;
+        }),
     }),
     defineField({
       name: "textoBotao",
@@ -105,7 +106,7 @@ export const popupAviso = defineType({
       media: "imagem",
     },
     prepare({ title, ativo, tipoMidia, media }) {
-      const modo = tipoMidia === "video" ? "Vídeo" : "Imagem";
+      const modo = tipoMidia === "video" ? "Vídeo (Embed)" : "Imagem";
       return {
         title: title || "Pop-up sem título",
         subtitle: `${ativo ? "Ativo" : "Desativado"} • ${modo}`,
