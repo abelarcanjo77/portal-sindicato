@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   filtrarCategoriasVisiveis,
@@ -9,6 +8,7 @@ import {
 } from "@/sanity/lib/queries";
 import { CorpoMateria } from "@/app/components/CorpoMateria";
 import { CabecalhoPortal } from "@/app/components/CabecalhoPortal";
+import { CapaNoticiaLightbox } from "@/app/components/CapaNoticiaLightbox";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -123,15 +123,10 @@ export default async function NoticiaPage({ params }: PageProps) {
 
           {/* Imagem de Capa */}
           {noticia.imagemUrl && (
-            <div className="relative my-8 h-72 md:h-[460px] w-full overflow-hidden rounded-xl bg-slate-100">
-              <Image
-                src={noticia.imagemUrl}
-                alt={noticia.titulo}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
+            <CapaNoticiaLightbox
+              url={noticia.imagemUrl}
+              alt={noticia.titulo}
+            />
           )}
 
           {/* Corpo Rico da Matéria (Parágrafos, Fotos, Vídeos, Galerias, PDFs) */}

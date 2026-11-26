@@ -59,3 +59,118 @@ body {
   width: 24px;
   background-color: #fbbf24;
 }
+
+@layer components {
+  .lightbox-swiper {
+    --swiper-navigation-size: 18px;
+    --swiper-navigation-color: #ffffff;
+    --swiper-theme-color: #fbbf24;
+  }
+
+  .lightbox-swiper .swiper-button-prev,
+  .lightbox-swiper .swiper-button-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) !important;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 9999px;
+    background-color: rgba(2, 6, 23, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0;
+    cursor: pointer;
+    z-index: 20;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .lightbox-swiper .swiper-button-prev {
+    left: 16px;
+    right: auto;
+  }
+
+  .lightbox-swiper .swiper-button-next {
+    right: 16px;
+    left: auto;
+  }
+
+  .lightbox-swiper .swiper-button-prev:hover,
+  .lightbox-swiper .swiper-button-next:hover {
+    background-color: rgba(15, 23, 42, 0.92);
+    transform: translateY(-50%) scale(1.06) !important;
+  }
+
+  .lightbox-swiper .swiper-button-prev svg,
+  .lightbox-swiper .swiper-button-next svg {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px;
+    min-height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.4;
+  }
+
+  .lightbox-swiper .swiper-button-prev::after,
+  .lightbox-swiper .swiper-button-next::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .lightbox-swiper .swiper-button-disabled {
+    opacity: 0.35 !important;
+  }
+
+  .lightbox-swiper .swiper-pagination {
+    bottom: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: auto !important;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    background-color: rgba(2, 6, 23, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(6px);
+  }
+
+  .lightbox-swiper .swiper-pagination-bullet,
+  .lightbox-swiper .banner-pill {
+    flex: 0 0 auto;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    min-height: 8px;
+    border-radius: 9999px;
+    background-color: rgba(255, 255, 255, 0.55);
+    opacity: 1 !important;
+    margin: 0 !important;
+    padding: 0;
+    transition: all 0.25s ease;
+    cursor: pointer;
+  }
+
+  .lightbox-swiper .swiper-pagination-bullet:hover,
+  .lightbox-swiper .banner-pill:hover {
+    background-color: rgba(255, 255, 255, 0.85);
+  }
+
+  .lightbox-swiper .swiper-pagination-bullet-active,
+  .lightbox-swiper .swiper-pagination-bullet-active.banner-pill {
+    width: 24px;
+    min-width: 24px;
+    height: 8px;
+    border-radius: 9999px;
+    background-color: #fbbf24;
+  }
+}
