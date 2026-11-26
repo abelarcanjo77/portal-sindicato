@@ -77,7 +77,7 @@ export function CarrosselBanners({ banners }: CarrosselBannersProps) {
               <span className="sm:hidden flex flex-row gap-2 sm:flex-col items-center justify-center rounded-md bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-2.5 sm:px-8 sm:py-3 text-center text-slate-950 shadow-lg border-b border-r border-black/15 transition">
                 {banner.subtextoBotao && (
                   <span className="text-[14px] font-bold uppercase tracking-wider text-slate-900/90">
-                    ↪
+                    ➥
                   </span>
                 )}
                 <span className="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-wide leading-tight">
