@@ -22,6 +22,14 @@ export const structure: StructureResolver = (S) =>
             ])
         ),
 
+      S.listItem()
+        .title("Pop-up de Entrada")
+        .child(
+          S.documentTypeList("popupAviso")
+            .title("Pop-up de Entrada")
+            .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
+        ),
+
       S.divider(),
 
       S.listItem()
