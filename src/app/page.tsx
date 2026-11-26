@@ -5,10 +5,12 @@ import {
   getBannersDestaque,
   getCategorias,
   getNoticiasDestaque,
+  getPopupAviso,
   getUltimasNoticias,
 } from "@/sanity/lib/queries";
 import { CabecalhoPortal } from "./components/CabecalhoPortal";
 import { CarrosselBanners } from "./components/CarrosselBanners";
+import { PopupEntrada } from "./components/PopupEntrada";
 
 function formatarData(dataIso: string) {
   if (!dataIso) return "";
@@ -20,11 +22,12 @@ function formatarData(dataIso: string) {
 }
 
 export default async function HomePage() {
-  const [banners, destaques, ultimas, categorias] = await Promise.all([
+  const [banners, destaques, ultimas, categorias, popup] = await Promise.all([
     getBannersDestaque(),
     getNoticiasDestaque(),
     getUltimasNoticias(),
     getCategorias(),
+    getPopupAviso(),
   ]);
 
   const manchetePrincipal = destaques[0];
@@ -47,6 +50,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+      <PopupEntrada popup={popup} />
       <CabecalhoPortal categorias={categorias} />
 
       {/* Painel rotativo de banners no topo da Home */}

@@ -287,3 +287,31 @@ export async function getBannersDestaque(): Promise<BannerDestaque[]> {
     { next: { tags: ["bannerDestaque"], revalidate: 60 } }
   );
 }
+
+export interface PopupAviso {
+  _id: string;
+  ativo: boolean;
+  titulo: string;
+  imagemUrl: string;
+  textoBotao: string;
+  subtextoBotao?: string;
+  urlDestino: string;
+  abrirNovaAba?: boolean;
+  frequencia?: "sessao" | "sempre";
+}
+
+export async function getPopupAviso(): Promise<PopupAviso | null> {
+  return client.fetch(
+    `*[_type == "popupAviso" && ativo == true][0]{
+      _id,
+      ativo,
+      titulo,
+      "imagemUrl": imagem.asset->url,
+      textoBotao,
+      subtextoBotao,
+      urlDestino,
+      abrirNovaAba,
+      frequencia
+    }`
+  );
+}
