@@ -1,19 +1,66 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import type { PopupAviso } from "@/sanity/lib/queries";
+import Image from "next/image";
 
 interface PopupEntradaProps {
   popup: PopupAviso | null;
 }
 
+function extrairEmbedVideo(url?: string): {
+  embedUrl: string | null;
+  isShort: boolean;
+} {
+  if (!url) return { embedUrl: null, isShort: false };
+
+  // YouTube Shorts
+  const shortsMatch = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/);
+  if (shortsMatch?.[1]) {
+    return {
+      embedUrl: `https://www.youtube.com/embed/${shortsMatch[1]}?autoplay=1&mute=1&rel=0`,
+      isShort: true,
+    };
+  }
+
+  // YouTube padrão / youtu.be
+  const ytMatch = url.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/
+  );
+  if (ytMatch?.[1]) {
+    return {
+      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&mute=1&rel=0`,
+      isShort: false,
+    };
+  }
+
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch?.[1]) {
+    return {
+      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&muted=1`,
+      isShort: false,
+    };
+  }
+
+  return { embedUrl: null, isShort: false };
+}
+
 export function PopupEntrada({ popup }: PopupEntradaProps) {
   const [aberto, setAberto] = useState(false);
 
+  const isVideo = popup?.tipoMidia === "video";
+  const videoDireto = popup?.videoArquivoUrl || (!extrairEmbedVideo(popup?.videoUrl).embedUrl ? popup?.videoUrl : undefined);
+  const { embedUrl, isShort } = extrairEmbedVideo(popup?.videoUrl);
+
+  const temMidiaValida = Boolean(
+    popup &&
+      (isVideo ? videoDireto || embedUrl : popup.imagemUrl)
+  );
+
   useEffect(() => {
-    if (!popup || !popup.ativo || !popup.imagemUrl) return;
+    if (!popup || !popup.ativo || !temMidiaValida) return;
 
     const chaveSessao = `popup_visto_${popup._id}`;
     if (popup.frequencia !== "sempre" && sessionStorage.getItem(chaveSessao)) {
@@ -25,7 +72,7 @@ export function PopupEntrada({ popup }: PopupEntradaProps) {
     }, 350);
 
     return () => clearTimeout(timer);
-  }, [popup]);
+  }, [popup, temMidiaValida]);
 
   useEffect(() => {
     if (!aberto) return;
@@ -43,7 +90,7 @@ export function PopupEntrada({ popup }: PopupEntradaProps) {
     };
   });
 
-  if (!aberto || !popup) return null;
+  if (!aberto || !popup || !temMidiaValida) return null;
 
   const storageKey = `popup_visto_${popup._id}`;
 
@@ -59,12 +106,12 @@ export function PopupEntrada({ popup }: PopupEntradaProps) {
     popup.urlDestino.startsWith("https://");
 
   const botaoAcao = (
-    <span className="flex w-full flex-col items-center justify-center rounded-lg bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-3 text-center text-slate-950 shadow-sm transition">
-      <span className="text-sm font-extrabold uppercase tracking-wide leading-tight">
+    <span className="flex w-full flex-col items-center justify-center rounded-lg bg-amber-400 hover:bg-amber-300 active:scale-[0.99] px-5 py-3.5 text-center text-slate-950 shadow-sm transition">
+      <span className="text-sm sm:text-base font-extrabold uppercase tracking-wide leading-tight">
         {popup.textoBotao}
       </span>
       {popup.subtextoBotao && (
-        <span className="mt-0.5 text-[11px] font-bold uppercase tracking-wider text-slate-900/85">
+        <span className="mt-0.5 text-xs font-bold uppercase tracking-wider text-slate-900/85">
           {popup.subtextoBotao}
         </span>
       )}
@@ -76,34 +123,65 @@ export function PopupEntrada({ popup }: PopupEntradaProps) {
       role="dialog"
       aria-modal="true"
       aria-label={popup.titulo}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-3 sm:p-6 backdrop-blur-xs overflow-y-auto"
       onClick={fecharPopup}
     >
       <div
-        className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/10"
+        className={`relative my-auto w-full ${
+          isVideo && isShort ? "max-w-sm" : "max-w-2xl"
+        } overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/10`}
         onClick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           onClick={fecharPopup}
           aria-label="Fechar pop-up"
-          className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-slate-950/65 text-white hover:bg-slate-950 transition cursor-pointer"
+          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-slate-950/75 text-white hover:bg-slate-950 transition cursor-pointer shadow-md"
         >
           ✕
         </button>
 
-        <div className="relative aspect-[4/3] w-full bg-slate-100">
-          <Image
-            src={popup.imagemUrl}
-            alt={popup.titulo}
-            fill
-            unoptimized
-            sizes="(max-width: 640px) 100vw, 448px"
-            className="object-cover"
-          />
+        {/* Área de mídia autoajustável */}
+        <div className="w-full bg-slate-950 flex items-center justify-center">
+          {isVideo ? (
+            embedUrl ? (
+              <div
+                className={`w-full ${
+                  isShort ? "aspect-[9/16] max-h-[70vh]" : "aspect-video"
+                }`}
+              >
+                <iframe
+                  src={embedUrl}
+                  title={popup.titulo}
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  className="h-full w-full border-0"
+                />
+              </div>
+            ) : (
+              <video
+                src={videoDireto}
+                controls
+                autoPlay
+                muted
+                playsInline
+                className="w-full h-auto max-h-[70vh] object-contain"
+              />
+            )
+          ) : popup.imagemUrl ? (
+            <Image
+              src={popup.imagemUrl}
+              alt={popup.titulo}
+              width={1200}
+              height={800}
+              unoptimized
+              className="w-full h-auto max-h-[70vh] object-contain bg-white"
+            />
+          ) : null}
         </div>
 
-        <div className="p-4 sm:p-5 space-y-3 bg-white">
+        {/* Rodapé com botão de ação e fechar */}
+        <div className="p-4 sm:p-5 space-y-2.5 bg-white">
           {isExterno || popup.abrirNovaAba ? (
             <a
               href={popup.urlDestino}
@@ -123,7 +201,7 @@ export function PopupEntrada({ popup }: PopupEntradaProps) {
           <button
             type="button"
             onClick={fecharPopup}
-            className="w-full rounded-lg border border-slate-200 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+            className="w-full rounded-lg border border-slate-200 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
           >
             Fechar aviso
           </button>
