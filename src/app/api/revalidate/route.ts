@@ -29,6 +29,11 @@ export async function POST(req: NextRequest) {
       revalidateTag("bannerDestaque", "max");
     }
 
+    // Atualiza o layout raiz (tema no <body>, cabeçalho e rodapé) quando as configurações mudam
+    if (body?._type === "configuracoesPortal") {
+      revalidatePath("/", "layout");
+    }
+
     // Atualiza a home, últimas notícias, busca e categorias
     revalidatePath("/", "page");
     revalidatePath("/ultimasNoticias", "page");
