@@ -1,7 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { IconBrandFacebookFilled, IconBrandInstagram, IconBrandYoutubeFilled,} from "@tabler/icons-react";
-import { getCategorias } from "@/sanity/lib/queries";
+import {
+  IconBrandFacebookFilled,
+  IconBrandInstagram,
+  IconBrandYoutubeFilled,
+} from "@tabler/icons-react";
+import { getCategorias, getConfiguracoesPortal } from "@/sanity/lib/queries";
 
 export interface CategoriaRodape {
   _id?: string;
@@ -9,34 +13,52 @@ export interface CategoriaRodape {
   slug: string;
 }
 
-interface RodapePortalProps {
+export interface RedesSociaisRodape {
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
+  whatsappUrl?: string;
+}
+
+export interface LinkInstitucionalRodape {
+  label: string;
+  href: string;
+}
+
+export interface RodapeStructureProps {
   categorias?: CategoriaRodape[];
+  categoriasMultimidia?: CategoriaRodape[];
+  logoUrl?: string;
+  logoAlt?: string;
   nomeSindicato?: string;
   sigla?: string;
   cnpj?: string;
+  descricaoInstitucional?: string;
   endereco?: string;
   cepCidade?: string;
   horarioAtendimento?: string;
   telefone?: string;
   whatsapp?: string;
   email?: string;
-  redesSociais?: {
-    instagram?: string;
-    facebook?: string;
-    youtube?: string;
-    whatsappUrl?: string;
-  };
-  linksInstitucionais?: {
-    label: string;
-    href: string;
-  }[];
+  redesSociais?: RedesSociaisRodape;
+  linksInstitucionais?: LinkInstitucionalRodape[];
 }
+
+const SLUGS_MULTIMIDIA_PADRAO = [
+  "galeria-de-fotos",
+  "galeria-de-videos",
+  "multimidia",
+];
 
 export function RodapeStructure({
   categorias = [],
+  categoriasMultimidia,
+  logoUrl,
+  logoAlt,
   nomeSindicato = "Sindicato dos Trabalhadores",
   sigla,
   cnpj,
+  descricaoInstitucional = "Representação, defesa de direitos, orientação jurídica e acompanhamento das campanhas salariais da categoria.",
   endereco = "Rua Exemplo, 123 — Centro",
   cepCidade = "CEP 00000-000 • São Paulo - SP",
   horarioAtendimento = "Segunda a sexta, das 8h às 17h",
@@ -51,12 +73,27 @@ export function RodapeStructure({
     { label: "Atendimento Jurídico", href: "/atendimentoJuridico" },
     { label: "Fale Conosco", href: "/contato" },
   ],
-}: RodapePortalProps) {
+}: RodapeStructureProps) {
   const anoAtual = new Date().getFullYear();
+  const srcLogo = logoUrl || "/img/logo-topo-site.svg";
+  const altLogo = logoAlt || nomeSindicato;
   const whatsappLimpo = whatsapp.replace(/\D/g, "");
   const hrefWhatsapp =
     redesSociais?.whatsappUrl ||
     (whatsappLimpo ? `https://wa.me/55${whatsappLimpo}` : undefined);
+
+  const listaCategorias = categorias.filter(
+    (cat) =>
+      !SLUGS_MULTIMIDIA_PADRAO.includes(cat.slug) && cat.slug !== "noticia"
+  );
+
+  const listaMultimidia =
+    categoriasMultimidia && categoriasMultimidia.length > 0
+      ? categoriasMultimidia
+      : categorias.filter(
+          (cat) =>
+            cat.slug === "galeria-de-fotos" || cat.slug === "galeria-de-videos"
+        );
 
   return (
     <footer className="mt-6 border-t border-slate-800 bg-slate-950 text-slate-300">
@@ -65,18 +102,18 @@ export function RodapeStructure({
           {/* Coluna 1: Identidade do Sindicato */}
           <div className="space-y-3">
             <Link href="/" className="inline-flex items-center gap-3">
-              <div className="relative h-10 w-10 overflow-hidden rounded-lg bg-white/10 p-1">
+              <div className="relative h-10 w-10 overflow-hidden rounded-lg bg-white p-1 shrink-0">
                 <Image
-                  src="/img/logo-topo-site.svg"
-                  alt={nomeSindicato}
+                  src={srcLogo}
+                  alt={altLogo}
                   fill
                   sizes="40px"
-                  className="object-contain p-1"
+                  className="object-contain"
                 />
               </div>
               <div>
                 <p className="text-sm font-bold leading-tight text-white">
-                  {sigla ? `${sigla}` : nomeSindicato}
+                  {sigla ? sigla : nomeSindicato}
                 </p>
                 {sigla && (
                   <p className="text-xs text-slate-400 line-clamp-1">
@@ -87,8 +124,7 @@ export function RodapeStructure({
             </Link>
 
             <p className="text-xs leading-relaxed text-slate-400">
-              Representação, defesa de direitos, orientação jurídica e
-              acompanhamento das campanhas salariais da categoria.
+              {descricaoInstitucional}
             </p>
 
             {cnpj && (
@@ -104,8 +140,8 @@ export function RodapeStructure({
               Institucional
             </h2>
             <ul className="mt-4 space-y-2.5 text-sm">
-              {linksInstitucionais.map((item) => (
-                <li key={item.href}>
+              {linksInstitucionais.map((item, idx) => (
+                <li key={`${item.href}-${idx}`}>
                   <Link
                     href={item.href}
                     className="text-slate-300 hover:text-amber-400 transition"
@@ -123,21 +159,17 @@ export function RodapeStructure({
               CATEGORIAS
             </h2>
             <ul className="mt-4 space-y-2.5 text-sm">
-              {categorias.length > 0 ? (
-                categorias.map((cat, idx) => {
-                    if(cat.slug != "galeria-de-fotos" && cat.slug != "galeria-de-videos" && cat.slug != "multimidia" && cat.slug != "noticia"){
-                        return(
-                            <li key={cat._id ?? `${cat.slug}-${idx}`}>
-                                <Link
-                                href={`/categoria/${cat.slug}`}
-                                className="text-slate-300 hover:text-amber-400 transition"
-                                >
-                                {cat.titulo}
-                                </Link>
-                            </li>
-                        )
-                    }
-                })
+              {listaCategorias.length > 0 ? (
+                listaCategorias.map((cat, idx) => (
+                  <li key={cat._id ?? `${cat.slug}-${idx}`}>
+                    <Link
+                      href={`/categoria/${cat.slug}`}
+                      className="text-slate-300 hover:text-amber-400 transition"
+                    >
+                      {cat.titulo}
+                    </Link>
+                  </li>
+                ))
               ) : (
                 <li>
                   <Link
@@ -149,40 +181,27 @@ export function RodapeStructure({
                 </li>
               )}
             </ul>
-            <div className="mt-4">
+
+            {listaMultimidia.length > 0 && (
+              <div className="mt-4">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-amber-400">
-                    MULTIMÍDIA
+                  MULTIMÍDIA
                 </h2>
                 <ul className="mt-4 space-y-2.5 text-sm">
-                {categorias.length > 0 ? (
-                    categorias.map((cat, idx) => {
-                        if(cat.slug == "galeria-de-fotos" || cat.slug == "galeria-de-videos"){
-                            return(
-                                <li key={cat._id ?? `${cat.slug}-${idx}`}>
-                                    <Link
-                                    href={`/categoria/${cat.slug}`}
-                                    className="text-slate-300 hover:text-amber-400 transition"
-                                    >
-                                    {cat.titulo}
-                                    </Link>
-                                </li>
-                            )
-                        }
-                    })
-                ) : (
-                    <li>
-                    <Link
-                        href="/ultimasNoticias"
+                  {listaMultimidia.map((cat, idx) => (
+                    <li key={cat._id ?? `${cat.slug}-${idx}`}>
+                      <Link
+                        href={`/categoria/${cat.slug}`}
                         className="text-slate-300 hover:text-amber-400 transition"
-                    >
-                        Todas as matérias
-                    </Link>
+                      >
+                        {cat.titulo}
+                      </Link>
                     </li>
-                )}
+                  ))}
                 </ul>
-            </div>
+              </div>
+            )}
           </div>
-          
 
           {/* Coluna 4: Endereço, Horário e Atendimento */}
           <div className="space-y-3 text-sm">
@@ -247,7 +266,7 @@ export function RodapeStructure({
                     rel="noopener noreferrer"
                     className="rounded-md bg-white/5 px-2.5 py-1 text-slate-200 hover:bg-white/10 hover:text-amber-400 transition flex gap-2 items-center"
                   >
-                    <IconBrandInstagram size={15}/>
+                    <IconBrandInstagram size={15} />
                     <span>Instagram</span>
                   </a>
                 )}
@@ -258,7 +277,7 @@ export function RodapeStructure({
                     rel="noopener noreferrer"
                     className="rounded-md bg-white/5 px-2.5 py-1 text-slate-200 hover:bg-white/10 hover:text-amber-400 transition flex gap-2 items-center"
                   >
-                    <IconBrandFacebookFilled size={15}/>
+                    <IconBrandFacebookFilled size={15} />
                     <span>Facebook</span>
                   </a>
                 )}
@@ -269,7 +288,7 @@ export function RodapeStructure({
                     rel="noopener noreferrer"
                     className="rounded-md bg-white/5 px-2.5 py-1 text-slate-200 hover:bg-white/10 hover:text-amber-400 transition flex gap-2 items-center"
                   >
-                    <IconBrandYoutubeFilled size={15}/>
+                    <IconBrandYoutubeFilled size={15} />
                     <span>YouTube</span>
                   </a>
                 )}
@@ -291,26 +310,54 @@ export function RodapeStructure({
 }
 
 export async function RodapePortal() {
+  const [categorias, config] = await Promise.all([
+    getCategorias(),
+    getConfiguracoesPortal(),
+  ]);
 
-    const categorias = await getCategorias()
+  const categoriasEscolhidas =
+    config?.categoriasRodape && config.categoriasRodape.length > 0
+      ? config.categoriasRodape
+      : categorias;
 
-    return(
-        <RodapeStructure
-            categorias={categorias}
-            nomeSindicato="Nome Completo do Sindicato"
-            sigla="SIGLA"
-            cnpj="00.000.000/0001-00"
-            endereco="Rua Principal, 100 - Centro"
-            cepCidade="CEP 00000-000 • Cidade - UF"
-            horarioAtendimento="Seg. a sex., das 8h30 às 17h30"
-            telefone="(00) 0000-0000"
-            whatsapp="(00) 00000-0000"
-            email="atendimento@xxxxx.com.br"
-            redesSociais={{
-                instagram: "https://instagram.com/",
-                facebook: "https://facebook.com/",
-                youtube: "https://youtube.com/",
-            }}
-        />
-    )
+  const multimidiaEscolhida =
+    config?.categoriasMultimidiaRodape &&
+    config.categoriasMultimidiaRodape.length > 0
+      ? config.categoriasMultimidiaRodape
+      : undefined;
+
+  const linksEscolhidos =
+    config?.linksInstitucionais && config.linksInstitucionais.length > 0
+      ? config.linksInstitucionais
+      : undefined;
+
+  const redesEscolhidas: RedesSociaisRodape = {
+    instagram: config?.redesSociais?.instagram || "https://instagram.com/",
+    facebook: config?.redesSociais?.facebook || "https://facebook.com/",
+    youtube: config?.redesSociais?.youtube || "https://youtube.com/",
+    whatsappUrl: config?.redesSociais?.whatsappUrl,
+  };
+
+  return (
+    <RodapeStructure
+      categorias={categoriasEscolhidas}
+      categoriasMultimidia={multimidiaEscolhida}
+      logoUrl={config?.logoUrl}
+      logoAlt={config?.logoAlt || config?.nomeSindicato}
+      nomeSindicato={config?.nomeSindicato || "Nome Completo do Sindicato"}
+      sigla={config?.sigla || "SIGLA"}
+      cnpj={config?.cnpj || "00.000.000/0001-00"}
+      descricaoInstitucional={config?.descricaoInstitucional}
+      endereco={config?.endereco || "Rua Principal, 100 - Centro"}
+      cepCidade={config?.cepCidade || "CEP 00000-000 • Cidade - UF"}
+      horarioAtendimento={
+        config?.horarioAtendimento || "Seg. a sex., das 8h30 às 17h30"
+      }
+      telefone={config?.telefone || "(00) 0000-0000"}
+      whatsapp={config?.whatsapp || "(00) 00000-0000"}
+      email={config?.email || "atendimento@xxxxx.com.br"}
+      redesSociais={redesEscolhidas}
+      linksInstitucionais={linksEscolhidos}
+    />
+  );
 }

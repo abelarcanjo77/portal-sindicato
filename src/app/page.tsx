@@ -4,6 +4,7 @@ import {
   filtrarCategoriasVisiveis,
   getBannersDestaque,
   getCategorias,
+  getConfiguracoesPortal,
   getNoticiasDestaque,
   getPopupAviso,
   getUltimasNoticias,
@@ -23,13 +24,15 @@ function formatarData(dataIso: string) {
 }
 
 export default async function HomePage() {
-  const [banners, destaques, ultimas, categorias, popup] = await Promise.all([
-    getBannersDestaque(),
-    getNoticiasDestaque(),
-    getUltimasNoticias(),
-    getCategorias(),
-    getPopupAviso(),
-  ]);
+  const [banners, destaques, ultimas, categorias, popup, configPortal] =
+    await Promise.all([
+      getBannersDestaque(),
+      getNoticiasDestaque(),
+      getUltimasNoticias(),
+      getCategorias(),
+      getPopupAviso(),
+      getConfiguracoesPortal(),
+    ]);
 
   const manchetePrincipal = destaques[0];
   const destaquesSecundarios = destaques.slice(1, 3);
@@ -50,9 +53,16 @@ export default async function HomePage() {
     noticiasFiltradas.length >= 3 ? noticiasFiltradas : ultimas;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex flex-col bg-transparent text-slate-900">
       <PopupEntrada popup={popup} />
-      <CabecalhoPortal categorias={categorias} />
+      <CabecalhoPortal
+        categorias={categorias}
+        logoUrl={configPortal?.logoUrl}
+        logoAlt={configPortal?.logoAlt || configPortal?.nomeSindicato}
+        tituloPortal={configPortal?.tituloCabecalho || configPortal?.nomeSindicato}
+        subtituloPortal={configPortal?.descricaoCabecalho}
+        redesSociais={configPortal?.redesSociais}
+      />
 
       {/* Painel rotativo de banners no topo da Home */}
       <CarrosselBanners banners={banners} />
@@ -297,7 +307,7 @@ export default async function HomePage() {
           Este site é apenas um objeto de estudo de programação, nenhuma das
           informações presentes são reais.
         </p>
-        <RodapePortal/>
+        <RodapePortal />
       </div>
     </div>
   );

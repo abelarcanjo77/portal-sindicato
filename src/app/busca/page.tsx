@@ -4,6 +4,7 @@ import {
   buscarNoticias,
   filtrarCategoriasVisiveis,
   getCategorias,
+  getConfiguracoesPortal,
 } from "@/sanity/lib/queries";
 import { Paginacao } from "@/app/components/Paginacao";
 import { CabecalhoPortal } from "../components/CabecalhoPortal";
@@ -29,9 +30,10 @@ export default async function BuscaPage({ searchParams }: PageProps) {
   const termo = q?.trim() || "";
   const paginaAtual = Math.max(1, Number(page) || 1);
 
-  const [todosResultados, categorias] = await Promise.all([
+  const [todosResultados, categorias, configPortal] = await Promise.all([
     termo ? buscarNoticias(termo) : Promise.resolve([]),
     getCategorias(),
+    getConfiguracoesPortal(),
   ]);
 
   const totalResultados = todosResultados.length;
@@ -43,8 +45,16 @@ export default async function BuscaPage({ searchParams }: PageProps) {
   const resultados = todosResultados.slice(inicio, inicio + ITENS_POR_PAGINA);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <CabecalhoPortal categorias={categorias}/>
+    <div className="min-h-screen bg-transparent text-slate-900">
+      <CabecalhoPortal
+        categorias={categorias}
+        termoBusca={termo}
+        logoUrl={configPortal?.logoUrl}
+        logoAlt={configPortal?.logoAlt || configPortal?.nomeSindicato}
+        tituloPortal={configPortal?.tituloCabecalho || configPortal?.nomeSindicato}
+        subtituloPortal={configPortal?.descricaoCabecalho}
+        redesSociais={configPortal?.redesSociais}
+      />
 
       <main className="mx-auto max-w-6xl px-4 py-10">
         <h1 className="text-2xl font-bold text-slate-900 mb-6">
@@ -153,7 +163,7 @@ export default async function BuscaPage({ searchParams }: PageProps) {
           Este site é apenas um objeto de estudo de programação, nenhuma das
           informações presentes são reais.
         </p>
-        <RodapePortal/>
+        <RodapePortal />
       </div>
     </div>
   );

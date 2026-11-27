@@ -6,6 +6,7 @@ import {
   filtrarCategoriasVisiveis,
   getCategoriaPorSlug,
   getCategorias,
+  getConfiguracoesPortal,
   getNoticiasPorCategoriaPaginada,
 } from "@/sanity/lib/queries";
 import { Paginacao } from "@/app/components/Paginacao";
@@ -58,11 +59,13 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
   const paginaAtual = Math.max(1, Number(page) || 1);
   const porPagina = 6;
 
-  const [categoria, resultado, todasCategorias] = await Promise.all([
-    getCategoriaPorSlug(slug),
-    getNoticiasPorCategoriaPaginada(slug, paginaAtual, porPagina),
-    getCategorias(),
-  ]);
+  const [categoria, resultado, todasCategorias, configPortal] =
+    await Promise.all([
+      getCategoriaPorSlug(slug),
+      getNoticiasPorCategoriaPaginada(slug, paginaAtual, porPagina),
+      getCategorias(),
+      getConfiguracoesPortal(),
+    ]);
 
   const { noticias, total } = resultado;
   const totalPaginas = Math.ceil(total / porPagina);
@@ -72,8 +75,15 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <CabecalhoPortal categorias={todasCategorias} />
+    <div className="min-h-screen bg-transparent text-slate-900">
+      <CabecalhoPortal
+        categorias={todasCategorias}
+        logoUrl={configPortal?.logoUrl}
+        logoAlt={configPortal?.logoAlt || configPortal?.nomeSindicato}
+        tituloPortal={configPortal?.tituloCabecalho || configPortal?.nomeSindicato}
+        subtituloPortal={configPortal?.descricaoCabecalho}
+        redesSociais={configPortal?.redesSociais}
+      />
 
       <main className="mx-auto max-w-6xl px-4 py-10">
         <div className="mb-8 border-b border-slate-200 pb-4 flex items-center gap-3">
@@ -172,7 +182,7 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
           Este site é apenas um objeto de estudo de programação, nenhuma das
           informações presentes são reais.
         </p>
-        <RodapePortal/>
+        <RodapePortal />
       </div>
     </div>
   );

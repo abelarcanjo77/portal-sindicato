@@ -4,6 +4,7 @@ import { Paginacao } from "@/app/components/Paginacao";
 import {
   filtrarCategoriasVisiveis,
   getCategorias,
+  getConfiguracoesPortal,
   getTodasNoticiasPaginada,
 } from "@/sanity/lib/queries";
 import { CabecalhoPortal } from "../components/CabecalhoPortal";
@@ -27,17 +28,25 @@ export default async function TodasNoticiasPage({ searchParams }: PageProps) {
   const paginaAtual = Math.max(1, Number(page) || 1);
   const porPagina = 6;
 
-  const [resultado, categorias] = await Promise.all([
+  const [resultado, categorias, configPortal] = await Promise.all([
     getTodasNoticiasPaginada(paginaAtual, porPagina),
     getCategorias(),
+    getConfiguracoesPortal(),
   ]);
 
   const { noticias, total } = resultado;
   const totalPaginas = Math.ceil(total / porPagina);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <CabecalhoPortal categorias={categorias} />
+    <div className="min-h-screen bg-transparent text-slate-900">
+      <CabecalhoPortal
+        categorias={categorias}
+        logoUrl={configPortal?.logoUrl}
+        logoAlt={configPortal?.logoAlt || configPortal?.nomeSindicato}
+        tituloPortal={configPortal?.tituloCabecalho || configPortal?.nomeSindicato}
+        subtituloPortal={configPortal?.descricaoCabecalho}
+        redesSociais={configPortal?.redesSociais}
+      />
 
       <main className="mx-auto max-w-6xl px-4 py-10">
         <div className="mb-8 border-b border-slate-200 pb-4 flex items-baseline justify-between gap-4">
@@ -138,7 +147,7 @@ export default async function TodasNoticiasPage({ searchParams }: PageProps) {
           Este site é apenas um objeto de estudo de programação, nenhuma das
           informações presentes são reais.
         </p>
-        <RodapePortal/>
+        <RodapePortal />
       </div>
     </div>
   );

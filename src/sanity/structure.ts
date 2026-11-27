@@ -12,6 +12,26 @@ export const structure: StructureResolver = (S) =>
     .title("Gestão do Portal")
     .items([
       S.listItem()
+        .title("Configurações do Portal")
+        .child(
+          S.list()
+            .title("Configurações do Portal")
+            .items([
+              S.listItem()
+                .title("Cabeçalho, Rodapé e Tema")
+                .id("configuracoes-portal-geral")
+                .child(
+                  S.editor()
+                    .id("configuracoesPortal")
+                    .schemaType("configuracoesPortal")
+                    .documentId("configuracoesPortal")
+                ),
+            ])
+        ),
+
+      S.divider(),
+
+      S.listItem()
         .title("Banner Destaque")
         .child(
           S.documentTypeList("bannerDestaque")

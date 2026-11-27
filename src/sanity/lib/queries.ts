@@ -319,3 +319,73 @@ export async function getPopupAviso(): Promise<PopupAviso | null> {
     }`
   );
 }
+
+export interface LinkInstitucional {
+  label: string;
+  href: string;
+}
+
+export interface RedesSociaisConfig {
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
+  whatsappUrl?: string;
+}
+
+export interface ConfiguracoesPortal {
+  nomeSindicato?: string;
+  sigla?: string;
+  cnpj?: string;
+  descricaoInstitucional?: string;
+  tituloCabecalho?: string;
+  descricaoCabecalho?: string;
+  endereco?: string;
+  cepCidade?: string;
+  horarioAtendimento?: string;
+  telefone?: string;
+  whatsapp?: string;
+  email?: string;
+  temaFundoSite?: "padrao" | "novembro-azul" | "outubro-rosa" | string;
+  logoUrl?: string;
+  logoAlt?: string;
+  redesSociais?: RedesSociaisConfig;
+  linksInstitucionais?: LinkInstitucional[];
+  categoriasRodape?: Categoria[];
+  categoriasMultimidiaRodape?: Categoria[];
+}
+
+export async function getConfiguracoesPortal(): Promise<ConfiguracoesPortal | null> {
+  const query = `*[_type == "configuracoesPortal"][0]{
+    nomeSindicato,
+    sigla,
+    cnpj,
+    descricaoInstitucional,
+    tituloCabecalho,
+    descricaoCabecalho,
+    endereco,
+    cepCidade,
+    horarioAtendimento,
+    telefone,
+    whatsapp,
+    email,
+    temaFundoSite,
+    "logoUrl": logoSindicato.asset->url,
+    "logoAlt": logoSindicato.alt,
+    redesSociais,
+    linksInstitucionais,
+    "categoriasRodape": coalesce(categoriasRodape[]->{
+      _id,
+      titulo,
+      "slug": slug.current,
+      cor
+    }, []),
+    "categoriasMultimidiaRodape": coalesce(categoriasMultimidiaRodape[]->{
+      _id,
+      titulo,
+      "slug": slug.current,
+      cor
+    }, [])
+  }`;
+
+  return client.fetch(query, {}, { next: { revalidate: 60 } });
+}

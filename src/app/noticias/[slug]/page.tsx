@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import {
   filtrarCategoriasVisiveis,
   getCategorias,
+  getConfiguracoesPortal,
   getNoticiaPorSlug,
 } from "@/sanity/lib/queries";
 import { CorpoMateria } from "@/app/components/CorpoMateria";
@@ -77,9 +78,10 @@ function formatarDataCompleta(dataIso: string) {
 
 export default async function NoticiaPage({ params }: PageProps) {
   const { slug } = await params;
-  const [noticia, categorias] = await Promise.all([
+  const [noticia, categorias, configPortal] = await Promise.all([
     getNoticiaPorSlug(slug),
     getCategorias(),
+    getConfiguracoesPortal(),
   ]);
 
   if (!noticia) {
@@ -89,8 +91,15 @@ export default async function NoticiaPage({ params }: PageProps) {
   const categoriasNoticia = filtrarCategoriasVisiveis(noticia.categorias);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <CabecalhoPortal categorias={categorias} />
+    <div className="min-h-screen bg-transparent text-slate-900">
+      <CabecalhoPortal
+        categorias={categorias}
+        logoUrl={configPortal?.logoUrl}
+        logoAlt={configPortal?.logoAlt || configPortal?.nomeSindicato}
+        tituloPortal={configPortal?.tituloCabecalho || configPortal?.nomeSindicato}
+        subtituloPortal={configPortal?.descricaoCabecalho}
+        redesSociais={configPortal?.redesSociais}
+      />
 
       <main className="mx-auto max-w-4xl px-4 py-10">
         <article className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-10">
@@ -153,13 +162,13 @@ export default async function NoticiaPage({ params }: PageProps) {
           )}
         </article>
       </main>
-      
+
       <div className="bg-slate-900 text-slate-100 pt-6">
         <p className="px-4 text-center text-sm sm:text-base text-amber-300/90">
           Este site é apenas um objeto de estudo de programação, nenhuma das
           informações presentes são reais.
         </p>
-        <RodapePortal/>
+        <RodapePortal />
       </div>
     </div>
   );

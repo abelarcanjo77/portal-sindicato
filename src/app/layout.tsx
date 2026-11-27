@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { getConfiguracoesPortal } from "@/sanity/lib/queries";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -25,14 +28,27 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+const CLASSES_TEMA_FUNDO: Record<string, string> = {
+  padrao: "tema-fundo-padrao",
+  "novembro-azul": "tema-fundo-novembro-azul",
+  "outubro-rosa": "tema-fundo-outubro-rosa",
+};
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const config = await getConfiguracoesPortal();
+  const classeTema =
+    CLASSES_TEMA_FUNDO[config?.temaFundoSite || "padrao"] ||
+    "tema-fundo-padrao";
+
   return (
     <html lang="pt-BR">
-      <body className="antialiased">{children}</body>
+      <body className={`min-h-screen antialiased transition-colors duration-300 ${classeTema}`}>
+        {children}
+      </body>
     </html>
   );
 }
