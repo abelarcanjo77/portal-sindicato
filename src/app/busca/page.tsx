@@ -6,8 +6,8 @@ import {
   getCategorias,
 } from "@/sanity/lib/queries";
 import { Paginacao } from "@/app/components/Paginacao";
-import { BarraNavegacao } from "@/app/components/BarraNavegacao";
 import { CabecalhoPortal } from "../components/CabecalhoPortal";
+import { RodapePortal } from "../components/RodapePortal";
 
 interface PageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
@@ -147,6 +147,14 @@ export default async function BuscaPage({ searchParams }: PageProps) {
           </>
         )}
       </main>
+
+      <div className="bg-slate-900 text-slate-100 pt-6">
+        <p className="px-4 text-center text-sm sm:text-base text-amber-300/90">
+          Este site é apenas um objeto de estudo de programação, nenhuma das
+          informações presentes são reais.
+        </p>
+        <RodapePortal/>
+      </div>
     </div>
   );
 }

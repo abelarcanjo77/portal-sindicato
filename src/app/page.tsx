@@ -11,6 +11,7 @@ import {
 import { CabecalhoPortal } from "./components/CabecalhoPortal";
 import { CarrosselBanners } from "./components/CarrosselBanners";
 import { PopupEntrada } from "./components/PopupEntrada";
+import { RodapePortal } from "@/app/components/RodapePortal";
 
 function formatarData(dataIso: string) {
   if (!dataIso) return "";
@@ -291,14 +292,13 @@ export default async function HomePage() {
         </section>
       </main>
 
-      <footer className="bg-slate-900 text-slate-100 px-4 py-6">
-        <div className="mx-auto max-w-6xl text-center">
-          <p className="font-semibold text-sm sm:text-base">
-            ATENÇÃO! - Esse site é apenas um componente para treino e estudo de
-            programação. Nenhum conteúdo é real.
-          </p>
-        </div>
-      </footer>
+      <div className="bg-slate-900 text-slate-100 pt-6">
+        <p className="px-4 text-center text-sm sm:text-base text-amber-300/90">
+          Este site é apenas um objeto de estudo de programação, nenhuma das
+          informações presentes são reais.
+        </p>
+        <RodapePortal/>
+      </div>
     </div>
   );
 }

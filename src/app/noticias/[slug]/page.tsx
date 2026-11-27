@@ -9,6 +9,7 @@ import {
 import { CorpoMateria } from "@/app/components/CorpoMateria";
 import { CabecalhoPortal } from "@/app/components/CabecalhoPortal";
 import { CapaNoticiaLightbox } from "@/app/components/CapaNoticiaLightbox";
+import { RodapePortal } from "@/app/components/RodapePortal";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -152,6 +153,14 @@ export default async function NoticiaPage({ params }: PageProps) {
           )}
         </article>
       </main>
+      
+      <div className="bg-slate-900 text-slate-100 pt-6">
+        <p className="px-4 text-center text-sm sm:text-base text-amber-300/90">
+          Este site é apenas um objeto de estudo de programação, nenhuma das
+          informações presentes são reais.
+        </p>
+        <RodapePortal/>
+      </div>
     </div>
   );
 }

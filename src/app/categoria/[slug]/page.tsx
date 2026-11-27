@@ -10,6 +10,7 @@ import {
 } from "@/sanity/lib/queries";
 import { Paginacao } from "@/app/components/Paginacao";
 import { CabecalhoPortal } from "@/app/components/CabecalhoPortal";
+import { RodapePortal } from "@/app/components/RodapePortal";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
@@ -165,6 +166,14 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
           baseUrl={`/categoria/${slug}`}
         />
       </main>
+
+      <div className="bg-slate-900 text-slate-100 pt-6">
+        <p className="px-4 text-center text-sm sm:text-base text-amber-300/90">
+          Este site é apenas um objeto de estudo de programação, nenhuma das
+          informações presentes são reais.
+        </p>
+        <RodapePortal/>
+      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   getTodasNoticiasPaginada,
 } from "@/sanity/lib/queries";
 import { CabecalhoPortal } from "../components/CabecalhoPortal";
+import { RodapePortal } from "../components/RodapePortal";
 
 interface PageProps {
   searchParams: Promise<{ page?: string }>;
@@ -131,6 +132,14 @@ export default async function TodasNoticiasPage({ searchParams }: PageProps) {
           baseUrl="/ultimasNoticias"
         />
       </main>
+
+      <div className="bg-slate-900 text-slate-100 pt-6">
+        <p className="px-4 text-center text-sm sm:text-base text-amber-300/90">
+          Este site é apenas um objeto de estudo de programação, nenhuma das
+          informações presentes são reais.
+        </p>
+        <RodapePortal/>
+      </div>
     </div>
   );
 }
