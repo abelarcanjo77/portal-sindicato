@@ -1,10 +1,11 @@
 import { client } from "./client";
 
 export interface Categoria {
-  _id: string;
+  _id?: string;
   titulo: string;
   slug: string;
   cor?: string;
+  iconeUrl?: string | null;
 }
 
 export interface NoticiaResumo {
@@ -37,7 +38,8 @@ const PROJECAO_CATEGORIAS = `"categorias": coalesce(categorias[]->{
   _id,
   titulo,
   "slug": slug.current,
-  cor
+  cor,
+  "iconeUrl": icone.asset->url
 }, [])`;
 
 // Busca até 3 matérias marcadas como "Destaque Principal"
@@ -78,7 +80,8 @@ export async function getCategorias(): Promise<Categoria[]> {
     _id,
     titulo,
     "slug": slug.current,
-    cor
+    cor,
+    "iconeUrl": icone.asset->url
   }`;
 
   return client.fetch(query, {}, { next: { revalidate: 60 } });
@@ -140,7 +143,8 @@ export async function getCategoriaPorSlug(
     _id,
     titulo,
     "slug": slug.current,
-    cor
+    cor,
+    "iconeUrl": icone.asset->url
   }`;
 
   return client.fetch(query, { slug }, { next: { revalidate: 60 } });
@@ -377,15 +381,18 @@ export async function getConfiguracoesPortal(): Promise<ConfiguracoesPortal | nu
       _id,
       titulo,
       "slug": slug.current,
-      cor
+      cor,
+      "iconeUrl": icone.asset->url
     }, []),
     "categoriasMultimidiaRodape": coalesce(categoriasMultimidiaRodape[]->{
       _id,
       titulo,
       "slug": slug.current,
-      cor
+      cor,
+      "iconeUrl": icone.asset->url
     }, [])
   }`;
 
   return client.fetch(query, {}, { next: { revalidate: 60 } });
 }
+

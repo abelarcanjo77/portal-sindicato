@@ -3,11 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
-interface CategoriaNav {
-  _id: string;
+export interface CategoriaNav {
+  _id?: string;
   titulo: string;
   slug: string;
+  cor?: string;
+  iconeUrl?: string | null;
 }
 
 interface BarraNavegacaoProps {
@@ -96,6 +99,30 @@ export function BarraNavegacao({ categorias }: BarraNavegacaoProps) {
         : subcategoriasNoticias.find((c) => `/categoria/${c.slug}` === pathname)
             ?.titulo || "Menu";
 
+
+  function IconeCategoria({
+    url,
+    titulo,
+    className,
+  }: {
+    url?: string | null;
+    titulo: string;
+    className: string;
+  }) {
+    if (!url) return null;
+  
+    return (
+      <Image
+        src={url}
+        alt={`Ícone de ${titulo}`}
+        width={28}
+        height={28}
+        unoptimized
+        className={`${className} object-contain shrink-0`}
+      />
+    );
+  }
+
   return (
     <nav
       ref={navRef}
@@ -176,10 +203,17 @@ export function BarraNavegacao({ categorias }: BarraNavegacaoProps) {
                           className={`block rounded-lg px-3.5 py-2 text-sm transition ${
                             ativo
                               ? "bg-blue-50 font-semibold text-blue-900"
-                              : "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                              : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
                           }`}
                         >
-                          {cat.titulo}
+                          <span className="flex items-center gap-1">
+                            <IconeCategoria
+                              url={cat.iconeUrl}
+                              titulo={cat.titulo}
+                              className="h-3 w-3"
+                            />
+                            {cat.titulo}
+                          </span>
                         </Link>
                       );
                     })}
@@ -376,7 +410,14 @@ export function BarraNavegacao({ categorias }: BarraNavegacaoProps) {
                             : "text-blue-200 hover:bg-white/10 hover:text-white"
                         }`}
                       >
-                        {cat.titulo}
+                        <span className="flex items-center gap-2">
+                          <IconeCategoria
+                            url={cat.iconeUrl}
+                            titulo={cat.titulo}
+                            className="h-4 w-4 brightness-0 invert"
+                          />
+                          {cat.titulo}
+                        </span>
                       </Link>
                     );
                   })}

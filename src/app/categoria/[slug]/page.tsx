@@ -48,6 +48,29 @@ function formatarData(dataIso?: string) {
   });
 }
 
+function IconeCategoria({
+  url,
+  titulo,
+  className,
+}: {
+  url?: string | null;
+  titulo: string;
+  className: string;
+}) {
+  if (!url) return null;
+
+  return (
+    <Image
+      src={url}
+      alt={`Ícone de ${titulo}`}
+      width={28}
+      height={28}
+      unoptimized
+      className={`${className} object-contain shrink-0`}
+    />
+  );
+}
+
 interface PageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ page?: string }>;
@@ -88,8 +111,13 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
       <main className="mx-auto max-w-6xl px-4 py-10">
         <div className="mb-8 border-b border-slate-200 pb-4 flex items-center gap-3">
           <span
-            className="inline-block h-6 w-2 rounded-full"
+            className="inline-block h-6 w-2 rounded-full shrink-0"
             style={{ backgroundColor: categoria.cor || "#1D4ED8" }}
+          />
+          <IconeCategoria
+            url={categoria.iconeUrl}
+            titulo={categoria.titulo}
+            className="h-8 w-8"
           />
           <h1 className="text-3xl font-bold text-slate-900">
             {categoria.titulo}
@@ -142,12 +170,12 @@ export default async function CategoriaPage({ params, searchParams }: PageProps)
                               {categoriasNoticia.map((cat, idx) => (
                                 <span
                                   key={cat._id ?? `${cat.slug}-${idx}`}
-                                  className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded text-white"
+                                  className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded text-white"
                                   style={{
                                     backgroundColor: cat.cor || "#1D4ED8",
                                   }}
                                 >
-                                  {cat.titulo}
+                                  <span>{cat.titulo}</span>
                                 </span>
                               ))}
                             </div>

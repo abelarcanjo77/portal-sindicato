@@ -1,6 +1,6 @@
 import { defineField, defineType } from 'sanity'
 
-export default defineType({
+const categoriaType = defineType({
   name: 'categoria',
   title: 'Categoria',
   type: 'document',
@@ -21,8 +21,24 @@ export default defineType({
     defineField({
       name: 'cor',
       title: 'Cor da Etiqueta (Hex)',
-      description: 'Exemplo: #1D4ED8 para azul ou #DC2626 para vermelho',
       type: 'string',
     }),
+    defineField({
+      name: 'icone',
+      title: 'Ícone da Categoria (SVG ou PNG)',
+      type: 'image',
+      description: 'Envie um ícone quadrado em SVG ou PNG transparente.',
+      options: {
+        accept: 'image/svg+xml, image/png',
+      },
+    }),
   ],
+  preview: {
+    select: {
+      title: 'titulo',
+      media: 'icone',
+    },
+  },
 })
+
+export default categoriaType
